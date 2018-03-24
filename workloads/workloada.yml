@@ -1,0 +1,7 @@
+name: workloada
+description: Test read workload
+recordcount: 100
+recordstart: 1521903303
+interval: 60s
+insert_proportion: 0.0
+read_proportion: 1.0

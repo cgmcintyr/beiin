@@ -21,5 +21,7 @@ defmodule Commandline.CLI do
 
     parsed = Optimus.parse!(optimus, args)
     config_file = parsed.args.config_file
+    [ document | _ ] = :yamerl_constr.file(config_file)
+    IO.inspect(document)
   end
 end
