@@ -2,9 +2,9 @@
 # and its dependencies with the aid of the Mix.Config module.
 use Mix.Config
 
-config :pre_commit,
-  commands: ["test"],
-  verbose: true
+config :logger,
+  backends: [:console],
+  compile_time_purge_level: :debug
 
 # This configuration is loaded before any dependency and is restricted
 # to this project. If another project depends on this project, this
