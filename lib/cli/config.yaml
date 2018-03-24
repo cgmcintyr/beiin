@@ -1,0 +1,18 @@
+name: "statcalc",
+description: "Statistic metrics calculator",
+version: "1.2.3",
+author: "John Smith js@corp.com",
+about: "Utility for calculating statistic metrics of values read from a file for a certain period of time",
+allow_unknown_args: false,
+parse_double_dash: true,
+args:
+  infile:
+    value_name: "INPUT_FILE",
+    help: "File with raw data",
+    required: true,
+    parser: :string
+  outfile:
+    value_name: "OUTPUT_FILE",
+    help: "File to write statistics to",
+    required: false,
+    parser: :string

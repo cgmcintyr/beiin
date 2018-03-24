@@ -1,0 +1,4 @@
+%{
+  "optimus": {:hex, :optimus, "0.1.7", "725211adb0f545ff45b92d66606677483bc34455f20e46aa01e073e4041f627a", [:mix], [{:yamerl, "~> 0.6.0", [hex: :yamerl, repo: "hexpm", optional: false]}], "hexpm"},
+  "yamerl": {:hex, :yamerl, "0.6.0", "5cb124a01a66418d7d8f2382948c89b48c1764079798eaeb9b578ddb3c7dc58b", [:rebar3], [], "hexpm"},
+}

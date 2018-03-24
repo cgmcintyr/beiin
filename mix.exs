@@ -19,6 +19,9 @@ defmodule Beiin.MixProject do
   end
 
   defp deps do
-    []
+    [
+      {:yamerl, "== 0.6.0"},
+      {:optimus, "== 0.1.7"}
+    ]
   end
 end
