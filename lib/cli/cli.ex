@@ -1,23 +1,21 @@
 defmodule Commandline.CLI do
   require Logger
+  require Record
 
-  def parse_config_file(document) do
+  defp parse_config_file(document) do
     List.foldl(document, %{}, fn({k, v}, acc) -> Map.put(acc, k, v) end)
   end
 
-  def log_yamerl_parsing_error(e) do
-    {yamerl_error, type, text, line, column, name, token, extra} = e
+  defp log_yamerl_parsing_error(e) do
+    {_, type, text, _, _, _, _, _} = e
+    msg = "Error loading worload config: #{text}"
+
     case type do
-      :error ->
-        Logger.error fn -> "#{text}" end
-        :error
-      :warning ->
-        Logger.warn fn -> "#{text}" end
-        :warning
-      _ ->
-        Logger.error fn -> "#{text}" end
-        :error
+      :error -> Logger.error(msg)
+      _ -> Logger.warn(msg)
     end
+
+    type
   end
 
   def main(args) do
@@ -47,8 +45,9 @@ defmodule Commandline.CLI do
       parse_config_file(document) |> IO.inspect
     catch
       {:yamerl_exception, errors} ->
-        Enum.map(errors, fn x -> log_yamerl_parsing_error(x) end)
-        exit(:parse_workload_config_error)
+        if Enum.map(errors, fn x -> log_yamerl_parsing_error(x) end) |> Enum.member?(:error) do
+          System.halt(1)
+        end
       e ->
         IO.inspect(e)
     end
