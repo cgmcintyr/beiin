@@ -1,17 +1,28 @@
 defmodule Commandline.CLI do
   require Logger
-  require Record
 
   defp log_yamerl_parsing_error(e) do
-    {_, type, text, _, _, _, _, _} = e
-    msg = "Error loading worload config: #{text}"
-
+    type = elem(e, 1)
+    text = elem(e, 2)
+    fun = fn -> "Error loading worload config: #{text}" end
     case type do
-      :error -> Logger.error(msg)
-      _ -> Logger.warn(msg)
+      :error -> Logger.error(fun)
+      _ -> Logger.warn(fun)
     end
-
     type
+  end
+
+  defp load_workload_cfg(path) do
+    try do
+      YamlElixir.read_from_file(path)
+    catch
+      {:yamerl_exception, errors} ->
+        if Enum.map(errors, fn x -> log_yamerl_parsing_error(x) end) |> Enum.member?(:error) do
+          Logger.flush()
+          System.halt(1)
+        end
+      e -> IO.inspect(e)
+    end
   end
 
   def main(args) do
@@ -27,7 +38,7 @@ defmodule Commandline.CLI do
         args: [
           config_file: [
             value_name: "CONFIG_FILE",
-            help: "Path to beiin configuration file",
+            help: "Path to beiin workload configuration file",
             required: true,
             parser: :string
           ]
@@ -35,17 +46,7 @@ defmodule Commandline.CLI do
       )
 
     parsed = Optimus.parse!(optimus, args)
-    config_file = parsed.args.config_file
-    try do
-      YamlElixir.read_from_file(config_file) |> IO.inspect
-    catch
-      {:yamerl_exception, errors} ->
-        if Enum.map(errors, fn x -> log_yamerl_parsing_error(x) end) |> Enum.member?(:error) do
-          Logger.flush()
-          System.halt(1)
-        end
-      e ->
-        IO.inspect(e)
-    end
+    path = parsed.args.config_file
+    load_workload_config(path) |> IO.inspect
   end
 end
