@@ -46,6 +46,7 @@ defmodule Commandline.CLI do
     catch
       {:yamerl_exception, errors} ->
         if Enum.map(errors, fn x -> log_yamerl_parsing_error(x) end) |> Enum.member?(:error) do
+          Logger.flush()
           System.halt(1)
         end
       e ->
