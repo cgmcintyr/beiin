@@ -2,10 +2,6 @@ defmodule Commandline.CLI do
   require Logger
   require Record
 
-  defp parse_config_file(document) do
-    List.foldl(document, %{}, fn({k, v}, acc) -> Map.put(acc, k, v) end)
-  end
-
   defp log_yamerl_parsing_error(e) do
     {_, type, text, _, _, _, _, _} = e
     msg = "Error loading worload config: #{text}"
@@ -41,8 +37,7 @@ defmodule Commandline.CLI do
     parsed = Optimus.parse!(optimus, args)
     config_file = parsed.args.config_file
     try do
-      [ document | _ ] = :yamerl_constr.file(config_file)
-      parse_config_file(document) |> IO.inspect
+      YamlElixir.read_from_file(config_file) |> IO.inspect
     catch
       {:yamerl_exception, errors} ->
         if Enum.map(errors, fn x -> log_yamerl_parsing_error(x) end) |> Enum.member?(:error) do

@@ -14,14 +14,14 @@ defmodule Beiin.MixProject do
 
   def application do
     [
-      extra_applications: [:logger, :yamerl]
+      extra_applications: [:logger, :yaml_elixir]
     ]
   end
 
   defp deps do
     [
-      {:yamerl, "== 0.6.0"},
-      {:optimus, "== 0.1.7"}
+      {:yaml_elixir, "~> 1.3.1"},
+      {:optimus, "~> 0.1.7"}
     ]
   end
 end
