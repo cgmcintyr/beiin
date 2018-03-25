@@ -47,6 +47,6 @@ defmodule Commandline.CLI do
 
     parsed = Optimus.parse!(optimus, args)
     path = parsed.args.config_file
-    load_workload_config(path) |> IO.inspect
+    load_workload_cfg(path) |> IO.inspect
   end
 end
