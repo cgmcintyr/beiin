@@ -1,6 +1,6 @@
 # Beiin
-TSDB Benchmarking Tool
-=======
+
+> TSDB Benchmarking Tool
 
 ## Installation
 
