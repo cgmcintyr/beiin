@@ -5,10 +5,12 @@ defmodule Commandline.CLI do
     type = elem(e, 1)
     text = elem(e, 2)
     fun = fn -> "Error loading worload config: #{text}" end
+
     case type do
       :error -> Logger.error(fun)
       _ -> Logger.warn(fun)
     end
+
     type
   end
 
@@ -21,7 +23,9 @@ defmodule Commandline.CLI do
           Logger.flush()
           System.halt(1)
         end
-      e -> IO.inspect(e)
+
+      e ->
+        IO.inspect(e)
     end
   end
 
@@ -47,7 +51,7 @@ defmodule Commandline.CLI do
 
     parsed = Optimus.parse!(optimus, args)
     path = parsed.args.config_file
-    load_workload_cfg(path) |> IO.inspect
+    load_workload_cfg(path) |> IO.inspect()
     Client.run("test")
   end
 end

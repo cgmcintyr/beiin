@@ -6,5 +6,6 @@ defmodule Client do
     {database, opts} = Keyword.pop(opts, :database, @default_database)
     IO.inspect(opts)
     database.init("localhost", 8080)
+    database.insert("localhost", 1234, 1234)
   end
 end

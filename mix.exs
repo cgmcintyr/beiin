@@ -14,14 +14,17 @@ defmodule Beiin.MixProject do
 
   def application do
     [
+      applications: [:httpoison],
       extra_applications: [:logger, :yaml_elixir]
     ]
   end
 
   defp deps do
     [
-      {:yaml_elixir, "~> 1.3.1"},
-      {:optimus, "~> 0.1.7"}
+      {:httpoison, "~> 1.0"},
+      {:optimus, "~> 0.1.7"},
+      {:poison, "~> 3.1"},
+      {:yaml_elixir, "~> 1.3.1"}
     ]
   end
 end
