@@ -24,7 +24,8 @@ defmodule Beiin.MixProject do
       {:httpoison, "~> 1.0"},
       {:optimus, "~> 0.1.7"},
       {:poison, "~> 3.1"},
-      {:yaml_elixir, "~> 1.3.1"}
+      {:yaml_elixir, "~> 1.3.1"},
+      {:currying, "~> 1.0.0"}
     ]
   end
 end

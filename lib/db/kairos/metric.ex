@@ -1,6 +1,6 @@
 defmodule KairosMetric do
   @derive [Poison.Encoder]
-  defstruct name: "metric", datapoints: [], tags: %{}
+  defstruct name: "metric", datapoints: [], tags: %{"default" => "value"}
 end
 
 defimpl Poison.Encoder, for: KairosMetric do
@@ -9,7 +9,7 @@ defimpl Poison.Encoder, for: KairosMetric do
       %{
         "name" => name,
         "datapoints" => datapoints,
-        "tags" => tags
+        "tags" => %{"host" => "server1"}
       },
       options
     )
