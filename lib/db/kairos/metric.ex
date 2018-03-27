@@ -9,7 +9,7 @@ defimpl Poison.Encoder, for: KairosMetric do
       %{
         "name" => name,
         "datapoints" => datapoints,
-        "tags" => %{"host" => "server1"}
+        "tags" => tags
       },
       options
     )
