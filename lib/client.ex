@@ -10,6 +10,6 @@ defmodule Client do
     db_ins = Currying.curry_many(&db.insert/5, ['localhost', 8080])
     db_ins.("localhost").(1235).(1235)
     db_read = Currying.curry_many(&db.read/4, ['localhost', 8080])
-    db_read.("localhost").(1234)
+    db_read.("localhost").(1235)
   end
 end
