@@ -45,6 +45,7 @@ defmodule KairosQueryTest do
           values: [%KairosQueryResultValue{timestamp: 5678, value: 8765}]
         }
       ]
+
       expected = %KairosQuery{sample_size: 2, results: expected_results}
 
       decoded = Poison.decode!(data, as: %KairosQuery{})
@@ -52,6 +53,10 @@ defmodule KairosQueryTest do
       Enum.map(expected_results, fn r -> assert Enum.member?(decoded.results, r) end)
     end
   end
+end
+
+defmodule KairosQueryResultTest do
+  use ExUnit.Case
 
   describe "Poison.encode! KairosQueryResult" do
     test "Encoding entire KairosQueryResult returns json object" do
