@@ -10,7 +10,7 @@ end
 
 defmodule KairosQuery do
   @derive [Poison.Encoder]
-  defstruct sample_size: 0, results: []
+  defstruct sample_size: 0, results: [%KairosQueryResult{}]
 end
 
 defimpl Poison.Encoder, for: KairosQueryResultValue do

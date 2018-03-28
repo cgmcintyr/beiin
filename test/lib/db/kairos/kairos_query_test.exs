@@ -15,6 +15,42 @@ defmodule KairosQueryTest do
       expected = %KairosQuery{sample_size: 1, results: []}
       assert Poison.decode!(data, as: %KairosQuery{}) == expected
     end
+
+    test "Decoding KairosQuery results are list of KairosQueryResults" do
+      data_results =
+        Enum.join(
+          [
+            "[",
+            ~s({"values":[[1234,4321]],"tags":{},"name":"test","group_by":[]}),
+            ",",
+            ~s({"values":[[5678,8765]],"tags":{},"name":"test","group_by":[]}),
+            "]"
+          ],
+          ""
+        )
+
+      data = ~s({"sample_size":2,"results":#{data_results}})
+
+      expected_results = [
+        %KairosQueryResult{
+          name: "test",
+          group_by: [],
+          tags: %{},
+          values: [%KairosQueryResultValue{timestamp: 1234, value: 4321}]
+        },
+        %KairosQueryResult{
+          name: "test",
+          group_by: [],
+          tags: %{},
+          values: [%KairosQueryResultValue{timestamp: 5678, value: 8765}]
+        }
+      ]
+      expected = %KairosQuery{sample_size: 2, results: expected_results}
+
+      decoded = Poison.decode!(data, as: %KairosQuery{})
+      assert decoded.sample_size == 2
+      Enum.map(expected_results, fn r -> assert Enum.member?(decoded.results, r) end)
+    end
   end
 
   describe "Poison.encode! KairosQueryResult" do
