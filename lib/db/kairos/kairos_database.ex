@@ -1,30 +1,11 @@
-defmodule KairosDatabase.Request do
-  @callback timed_post(url :: String.t(), data :: String.t(), headers :: []) ::
-              {:ok, optime :: integer, response :: map()}
-end
-
-defmodule KairosDatabase.Request.HTTP do
-  @behaviour KairosDatabase.Request
-
-  def timed_post(url, data, headers) do
-    {optime, {:ok, response}} = :timer.tc(&HTTPoison.post/3, [url, data, headers])
-    {:ok, optime, response}
-  end
-end
-
 defmodule KairosDatabase do
   @behaviour Database
   @kairos_database_request Application.get_env(:beiin, :kairos_database_request)
 
   require Logger
 
-  defp create_metric_map(metric, timestamp, value, tags \\ %{default: "default"}) do
-    %KairosMetric{name: metric, datapoints: [[timestamp, value]], tags: tags}
-  end
-
   def init(host, port) do
     Logger.info(fn -> "Setting up kairos database at #{host}:#{port}" end)
-
     {:ok, 0}
   end
 
@@ -64,5 +45,9 @@ defmodule KairosDatabase do
     end)
 
     {:ok, optime}
+  end
+
+  defp create_metric_map(metric, timestamp, value, tags \\ %{default: "default"}) do
+    %KairosMetric{name: metric, datapoints: [[timestamp, value]], tags: tags}
   end
 end

@@ -1,7 +1,21 @@
 defmodule Database do
-  @callback init(String.t(), integer) :: {:ok, integer} | {:error, String.t()}
-  @callback insert(String.t(), integer, String.t(), integer, integer) ::
-              {:ok, integer} | {:error, String.t()}
-  @callback read(String.t(), integer, String.t(), integer) ::
-              {:ok, integer} | {:error, String.t()}
+  @callback init(
+              host :: String.t(),
+              port :: integer
+            ) :: {:ok, integer} | {:error, String.t()}
+
+  @callback insert(
+              host :: String.t(),
+              port :: integer,
+              metric :: String.t(),
+              timestamp :: integer,
+              value :: integer
+            ) :: {:ok, integer} | {:error, String.t()}
+
+  @callback read(
+              host :: String.t(),
+              port :: integer,
+              metric :: String.t(),
+              timestamp :: integer
+            ) :: {:ok, integer} | {:error, String.t()}
 end

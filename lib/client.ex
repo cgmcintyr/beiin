@@ -2,6 +2,10 @@ defmodule Client do
   require Logger
 
   @default_database KairosDatabase
+  @host "localhost"
+  @port 8080
+  @metric "localhost"
+  @record_count 5
 
   def run(msg, opts \\ []) do
     Logger.info(fn -> "Running client" end)
@@ -10,19 +14,18 @@ defmodule Client do
     {db, opts} = Keyword.pop(opts, :database, @default_database)
     db.init("localhost", 8080)
 
-    read = Currying.curry_many(&db.insert/5, ['localhost', 8080])
-    insert = Currying.curry_many(&db.read/4, ['localhost', 8080])
+    {:ok, db_pid} = DatabaseClient.new(db, @host, @port)
 
-    loop("localhost", tsg_pid, read, insert, 5)
+    loop(@metric, tsg_pid, db_pid, @record_count)
   end
 
-  defp loop(_, _, _, _, 0) do
+  defp loop(_, _, _, 0) do
   end
 
-  defp loop(metric, tsg_pid, read_fun, ins_fun, n) do
+  defp loop(metric, tsg_pid, db_pid, n) do
     value = :rand.uniform(1_000_000_000)
-    read_fun.(metric).(TimestampGenerator.next_timestamp(tsg_pid)).(value)
-    ins_fun.(metric).(TimestampGenerator.get_timestamp(tsg_pid))
-    loop(metric, tsg_pid, read_fun, ins_fun, n - 1)
+    DatabaseClient.insert(db_pid, metric, TimestampGenerator.next_timestamp(tsg_pid), value)
+    DatabaseClient.read(db_pid, metric, TimestampGenerator.get_timestamp(tsg_pid))
+    loop(metric, tsg_pid, db_pid, n - 1)
   end
 end
