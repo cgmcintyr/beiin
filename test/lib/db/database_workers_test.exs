@@ -1,20 +1,38 @@
 defmodule DatabaseWorkerTest do
   use ExUnit.Case, async: true
 
-  import Mox
+  @host "localhost"
+  @port 9999
+  @metric "metric"
+  @timestamp 1234
+  @value 4321
 
-  setup :verify_on_exit!
+  defmodule CustomDatabase do
+    @behaviour Database
+    def init(_, _) do
+      {:ok, 0}
+    end
+
+    def insert(_, _, _, _, _) do
+      {:ok, 1234}
+    end
+
+    def read(_, _, _, _) do
+      {:ok, 5678}
+    end
+  end
 
   describe "DatbaseReadWorker Tests" do
-    test "Run applies database module's read function" do
-      response = %HTTPoison.Response{ body: "{}", headers: [{}], status_code: 200 }
-      KairosDatabase.MockRequest
-        |> expect(:timed_post, fn(_, _, _) -> {:ok, 1000, response} end)
+    test "Exec calls databases read function" do
+      {:ok, pid} = DatabaseReadWorker.new(CustomDatabase, @host, @port)
+      assert DatabaseReadWorker.exec(pid, @metric, @timestamp) == {:ok, 5678}
+    end
+  end
 
-      {:ok, pid} = DatabaseReadWorker.new(KairosDatabase)
-      KairosDatabase.MockRequest |> allow(self(), pid)
-
-      assert DatabaseReadWorker.exec(pid, 0) == {:ok, 1000}
+  describe "DatbaseInsertWorker Tests" do
+    test "Exec calls databases insert function" do
+      {:ok, pid} = DatabaseInsertWorker.new(CustomDatabase, @host, @port)
+      assert DatabaseInsertWorker.exec(pid, @metric, @timestamp, @value) == {:ok, 1234}
     end
   end
 end

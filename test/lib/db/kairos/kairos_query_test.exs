@@ -46,8 +46,6 @@ defmodule KairosQueryTest do
         }
       ]
 
-      expected = %KairosQuery{sample_size: 2, results: expected_results}
-
       decoded = Poison.decode!(data, as: %KairosQuery{})
       assert decoded.sample_size == 2
       Enum.map(expected_results, fn r -> assert Enum.member?(decoded.results, r) end)

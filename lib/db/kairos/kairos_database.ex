@@ -1,5 +1,6 @@
 defmodule KairosDatabase.Request do
-  @callback timed_post(url :: String.t, data :: String.t, headers :: []) :: {:ok, optime :: integer, response :: map()}
+  @callback timed_post(url :: String.t(), data :: String.t(), headers :: []) ::
+              {:ok, optime :: integer, response :: map()}
 end
 
 defmodule KairosDatabase.Request.HTTP do
@@ -48,10 +49,12 @@ defmodule KairosDatabase do
 
     url = "#{host}:#{port}/api/v1/datapoints/query"
     encoded_tags = Poison.encode!(tags)
+
     data =
       '{"start_absolute":#{timestamp},"end_absolute":#{timestamp + 1},"metrics":[{"tags":#{
         encoded_tags
       },"name":"#{metric}","limit":10}]}'
+
     headers = [{"Content-Type", "application/json"}]
 
     {:ok, optime, response} = @kairos_database_request.timed_post(url, data, headers)
