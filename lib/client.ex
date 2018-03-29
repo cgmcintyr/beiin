@@ -6,10 +6,12 @@ defmodule Client do
   @port 8080
   @metric "localhost"
   @record_count 5
+  @insert_start 1_522_331_174_000
+  @interval 1000
 
   def run(msg, opts \\ []) do
     Logger.info(fn -> "Running client" end)
-    {:ok, tsg_pid} = TimestampGenerator.new(1_522_331_174_000, 1000)
+    {:ok, tsg_pid} = TimestampGenerator.new(@insert_start, @interval)
 
     {db, opts} = Keyword.pop(opts, :database, @default_database)
     db.init("localhost", 8080)
