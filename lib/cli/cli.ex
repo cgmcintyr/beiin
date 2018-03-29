@@ -14,7 +14,7 @@ defmodule Commandline.CLI do
     type
   end
 
-  defp load_workload_cfg(path) do
+  defp load_workload(path) do
     try do
       YamlElixir.read_from_file(path)
     catch
@@ -39,19 +39,43 @@ defmodule Commandline.CLI do
         about: "Utility for benchmarking different time series databases with custom workloads.",
         allow_unknown_args: false,
         parse_double_dash: true,
-        args: [
-          config_file: [
-            value_name: "CONFIG_FILE",
-            help: "Path to beiin workload configuration file",
-            required: true,
-            parser: :string
+        subcommands: [
+          run: [
+            name: "run",
+            about: "Run timeseries workload",
+            args: [
+              workload_file: [
+                value_name: "WORKLOAD",
+                help: "Path to beiin workload configuration file",
+                required: true,
+                parser: :string
+              ]
+            ]
+          ],
+          load: [
+            name: "load",
+            about: "Load data required to run workload",
+            args: [
+              workload_file: [
+                value_name: "WORKLOAD",
+                help: "Path to beiin workload configuration file",
+                required: true,
+                parser: :string
+              ]
+            ]
           ]
         ]
       )
 
-    parsed = Optimus.parse!(optimus, args)
-    path = parsed.args.config_file
-    load_workload_cfg(path) |> IO.inspect()
-    Client.run("test")
+    {command_path, parsed} = Optimus.parse!(optimus, args)
+
+    path = parsed.args.workload_file
+    cfg = load_workload(path)
+
+    case command_path do
+      [:load] -> Client.load(cfg)
+      [:run] -> Client.run(cfg)
+      _ -> optimus |> Optimus.help() |> IO.puts()
+    end
   end
 end

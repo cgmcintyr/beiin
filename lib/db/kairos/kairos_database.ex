@@ -18,7 +18,7 @@ defmodule KairosDatabase do
 
     {:ok, optime, response} = @kairos_database_request.timed_post(url, data, headers)
 
-    Logger.info(fn ->
+    Logger.debug(fn ->
       "Insert ran in #{optime / 1_000_000} with status code #{response.status_code}"
     end)
 
@@ -40,7 +40,7 @@ defmodule KairosDatabase do
 
     {:ok, optime, response} = @kairos_database_request.timed_post(url, data, headers)
 
-    Logger.info(fn ->
+    Logger.debug(fn ->
       "Read ran in #{optime / 1_000_000} with status code #{response.status_code}"
     end)
 

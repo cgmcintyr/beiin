@@ -6,6 +6,12 @@ config :logger,
   backends: [:console],
   compile_time_purge_level: :debug
 
+config :logger, :console,
+  format: "$time $metadata[$level] $levelpad$message\n",
+  metadata: [:user_id],
+  colors: [{:enabled, true}],
+  level: :info
+
 # This configuration is loaded before any dependency and is restricted
 # to this project. If another project depends on this project, this
 # file won't be loaded nor affect the parent project. For this reason,
