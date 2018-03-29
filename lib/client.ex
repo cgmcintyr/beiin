@@ -5,7 +5,7 @@ defmodule Client do
 
   def run(msg, opts \\ []) do
     Logger.info(fn -> "Running client" end)
-    {:ok, tsg_pid} = TimestampGenerator.new(1522331174000, 1000)
+    {:ok, tsg_pid} = TimestampGenerator.new(1_522_331_174_000, 1000)
 
     {db, opts} = Keyword.pop(opts, :database, @default_database)
     db.init("localhost", 8080)
@@ -16,11 +16,12 @@ defmodule Client do
     loop("localhost", tsg_pid, read, insert, 5)
   end
 
-  defp loop(_, _,  _, _, 0) do
+  defp loop(_, _, _, _, 0) do
   end
 
   defp loop(metric, tsg_pid, read_fun, ins_fun, n) do
-    read_fun.(metric).(TimestampGenerator.next_timestamp(tsg_pid)).(1000)
+    value = :rand.uniform(1_000_000_000)
+    read_fun.(metric).(TimestampGenerator.next_timestamp(tsg_pid)).(value)
     ins_fun.(metric).(TimestampGenerator.get_timestamp(tsg_pid))
     loop(metric, tsg_pid, read_fun, ins_fun, n - 1)
   end
