@@ -1,31 +1,41 @@
 defmodule DatabaseWorkerTest do
   use ExUnit.Case, async: true
 
+  import Mox
+
+  setup :verify_on_exit!
+
   describe "DatbaseReadWorker Tests" do
-    test "Run applies function passed to DatabaseReadWorker.new" do
-      {:ok, pid} = DatabaseReadWorker.new(fn -> "test output" end)
-      assert DatabaseReadWorker.run(pid) == "test output"
-    end
+    test "Run applies database module's read function" do
+      response = %HTTPoison.Response{
+        body: "{}",
+        headers: [
+          {"Server", "nginx"},
+          {"Date", "Thu, 21 Jul 2016 16:52:38 GMT"},
+          {"Content-Type", "application/json"},
+          {"Content-Length", "397"},
+          {"Connection", "keep-alive"},
+          {"Keep-Alive", "timeout=10"},
+          {"Vary", "Accept-Encoding"},
+          {"Vary", "Accept-Encoding"},
+          {"X-UA-Compatible", "IE=edge"},
+          {"X-Frame-Options", "deny"},
+          {"Content-Security-Policy", "default-src 'self'; script-src 'self' foo"},
+          {"X-Content-Security-Policy", "default-src 'self'; script-src 'self' foo"},
+          {"Cache-Control", "no-cache, no-store, must-revalidate"},
+          {"Pragma", "no-cache"},
+          {"X-Content-Type-Options", "nosniff"},
+          {"Strict-Transport-Security", "max-age=31536000;"}
+        ],
+        status_code: 200
+      }
 
-    test "Multiple DatabaseReadWorker can exist at once" do
-      {:ok, pid1} = DatabaseReadWorker.new(fn -> "test output1" end)
-      {:ok, pid2} = DatabaseReadWorker.new(fn -> "test output2" end)
-      assert DatabaseReadWorker.run(pid1) == "test output1"
-      assert DatabaseReadWorker.run(pid2) == "test output2"
-    end
-  end
+      KairosDatabase.MockRequest |> expect(:timed_post, fn(_, _, _) -> {:ok, 1000, response} end)
 
-  describe "DatbaseInsertWorker Tests" do
-    test "Run applies function passed to DatabaseInsertWorker.new" do
-      {:ok, pid} = DatabaseInsertWorker.new(fn -> "test output" end)
-      assert DatabaseInsertWorker.run(pid) == "test output"
-    end
+      {:ok, pid} = DatabaseReadWorker.new(KairosDatabase)
+      KairosDatabase.MockRequest |> allow(self(), pid)
 
-    test "Multiple DatabaseInsertWorker can exist at once" do
-      {:ok, pid1} = DatabaseInsertWorker.new(fn -> "test output1" end)
-      {:ok, pid2} = DatabaseInsertWorker.new(fn -> "test output2" end)
-      assert DatabaseInsertWorker.run(pid1) == "test output1"
-      assert DatabaseInsertWorker.run(pid2) == "test output2"
+      assert DatabaseReadWorker.exec(pid, 0) == {:ok, 1000}
     end
   end
 end
