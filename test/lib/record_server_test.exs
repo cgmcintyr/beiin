@@ -37,13 +37,14 @@ defmodule RecordServerTest do
 
   test "RecordServer with N metrics returns N records with matching timestamps" do
     metrics = ["test_metric_1", "test_metric_2"]
+    tags = [%{}]
+    start_time = 1234
 
-    rserver_spec = %{id: RecordServer, start: {RecordServer, :start_link, [metrics]}}
+    rserver_spec = %{id: RecordServer, start: {RecordServer, :start_link, [metrics, tags, start_time]}}
     rserver = start_supervised!(rserver_spec)
 
     [record | records] = RecordServer.next(rserver)
-    t = record.timestamp
-    assert Enum.all?(records, fn record -> record.timestamp == t end)
+    assert Enum.all?(records, fn record -> record.timestamp == start_time end)
   end
 
   test "RecordServer with N metrics and M tag maps returns N*M records" do
@@ -62,4 +63,17 @@ defmodule RecordServerTest do
     assert Enum.all?(metrics, fn m -> Enum.member?(record_metrics, m) end)
     assert Enum.all?(tags, fn t -> Enum.member?(record_tags, t) end)
   end
+
+  test "RecordServer's first call to next matches initialised start time" do
+    metrics = ["test_metric_1"]
+    tags = [%{}]
+    start_time = 9999
+
+    rserver_spec = %{id: RecordServer, start: {RecordServer, :start_link, [metrics, tags, start_time]}}
+    rserver = start_supervised!(rserver_spec)
+
+    [record] = RecordServer.next(rserver)
+    assert record.timestamp == start_time
+  end
+
 end
