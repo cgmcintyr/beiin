@@ -33,4 +33,16 @@ defmodule TimestampGeneratorTest do
     TimestampGenerator.next_timestamp(pid)
     assert TimestampGenerator.next_timestamp(pid) == start_time + interval * 2
   end
+
+  test "TimestampGenerators are independent of one another" do
+    start_time = 1000
+    interval = 2000
+
+    {:ok, pid1} = TimestampGenerator.new(start_time, interval)
+    {:ok, pid2} = TimestampGenerator.new(start_time, interval)
+    TimestampGenerator.next_timestamp(pid2)
+
+    assert TimestampGenerator.next_timestamp(pid1) == start_time + interval
+    assert TimestampGenerator.next_timestamp(pid2) == start_time + interval * 2
+  end
 end
