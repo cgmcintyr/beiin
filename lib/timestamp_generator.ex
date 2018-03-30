@@ -1,7 +1,7 @@
 defmodule TimestampGenerator do
   def new(start_time, interval) do
     Agent.start_link(fn ->
-      %{start_time: start_time, interval: interval, timestamp: start_time}
+      %{start_time: start_time, interval: interval, timestamp: start_time - interval}
     end)
   end
 

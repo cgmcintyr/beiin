@@ -13,16 +13,18 @@ defmodule TimestampGeneratorTest do
     assert TimestampGenerator.get_interval(pid) == interval
   end
 
-  test "Timestamp of new TimestampGenerator is initialised start_time" do
+  test "Timestamp of new TimestampGenerator is initialised start_time - interval" do
     start_time = 1000
-    {:ok, pid} = TimestampGenerator.new(start_time, 2000)
-    assert TimestampGenerator.get_timestamp(pid) == start_time
+    interval = 1000
+    {:ok, pid} = TimestampGenerator.new(start_time, interval)
+    assert TimestampGenerator.get_timestamp(pid) == start_time - interval
   end
 
   test "TimestampGenerator.next increments timestamp by interval" do
     start_time = 1000
     interval = 2000
     {:ok, pid} = TimestampGenerator.new(start_time, interval)
+    TimestampGenerator.next_timestamp(pid)
     assert TimestampGenerator.next_timestamp(pid) == start_time + interval
   end
 
@@ -30,6 +32,7 @@ defmodule TimestampGeneratorTest do
     start_time = 1000
     interval = 2000
     {:ok, pid} = TimestampGenerator.new(start_time, interval)
+    TimestampGenerator.next_timestamp(pid)
     TimestampGenerator.next_timestamp(pid)
     assert TimestampGenerator.next_timestamp(pid) == start_time + interval * 2
   end
@@ -42,7 +45,7 @@ defmodule TimestampGeneratorTest do
     {:ok, pid2} = TimestampGenerator.new(start_time, interval)
     TimestampGenerator.next_timestamp(pid2)
 
-    assert TimestampGenerator.next_timestamp(pid1) == start_time + interval
-    assert TimestampGenerator.next_timestamp(pid2) == start_time + interval * 2
+    assert TimestampGenerator.next_timestamp(pid1) == start_time
+    assert TimestampGenerator.next_timestamp(pid2) == start_time + interval
   end
 end
