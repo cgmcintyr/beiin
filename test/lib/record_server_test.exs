@@ -40,7 +40,11 @@ defmodule RecordServerTest do
     tags = [%{}]
     start_time = 1234
 
-    rserver_spec = %{id: RecordServer, start: {RecordServer, :start_link, [metrics, tags, start_time]}}
+    rserver_spec = %{
+      id: RecordServer,
+      start: {RecordServer, :start_link, [metrics, tags, start_time]}
+    }
+
     rserver = start_supervised!(rserver_spec)
 
     [record | records] = RecordServer.next(rserver)
@@ -69,11 +73,33 @@ defmodule RecordServerTest do
     tags = [%{}]
     start_time = 9999
 
-    rserver_spec = %{id: RecordServer, start: {RecordServer, :start_link, [metrics, tags, start_time]}}
+    rserver_spec = %{
+      id: RecordServer,
+      start: {RecordServer, :start_link, [metrics, tags, start_time]}
+    }
+
     rserver = start_supervised!(rserver_spec)
 
     [record] = RecordServer.next(rserver)
     assert record.timestamp == start_time
   end
 
+  test "Calls to RecordServer.next increments timestamp by interval" do
+    metrics = ["test_metric_1"]
+    tags = [%{}]
+    start_time = :os.system_time(:millisecond)
+    interval = 1000
+
+    rserver_spec = %{
+      id: RecordServer,
+      start: {RecordServer, :start_link, [metrics, tags, start_time, interval]}
+    }
+
+    rserver = start_supervised!(rserver_spec)
+
+    [record1] = RecordServer.next(rserver)
+    [record2] = RecordServer.next(rserver)
+
+    assert record2.timestamp == record1.timestamp + interval
+  end
 end
