@@ -6,7 +6,7 @@ defmodule RecordServerSupervisor do
       %{
         id: RecordServer,
         start:
-          {RecordServer, :start_link, [metrics, tags, start_time, interval, [name: RecordServer]]}
+          {RecordServer, :start_link, [metrics, tags, [name: RecordServer]]}
       },
       %{
         id: TimestampGenerator,

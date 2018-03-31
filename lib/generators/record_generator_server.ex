@@ -7,18 +7,10 @@ defmodule RecordServer do
 
   ## Client API
 
-  def start_link(
-        metrics,
-        tag_maps \\ [%{}],
-        start_time \\ :os.system_time(:millisecond),
-        interval \\ 1000,
-        opts \\ []
-      ) do
+  def start_link(metrics, tag_maps, opts \\ []) do
     init_map = %{
       metrics: metrics,
       tag_maps: tag_maps,
-      start_time: start_time,
-      interval: interval,
       next_records: []
     }
 
