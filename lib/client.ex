@@ -13,8 +13,7 @@ defmodule Client do
   def load(_, opts \\ []) do
     Logger.info(fn -> "Loading data" end)
 
-    {:ok, pid} =
-      RecordServerSupervisor.start_link(@metrics, @tags, @record_count, @interval, @insert_start)
+    RecordServerSupervisor.start_link(@metrics, @tags, @record_count, @interval, @insert_start)
 
     {db, _} = Keyword.pop(opts, :database, @default_database)
     db.init("localhost", 8080)
@@ -24,7 +23,7 @@ defmodule Client do
     load_loop(db_pid, @record_count)
   end
 
-  def run(_, opts \\ []) do
+  def run(_)do
     Logger.error(fn -> "Run has not been implemented yet" end)
   end
 
