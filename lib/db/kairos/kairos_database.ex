@@ -9,11 +9,11 @@ defmodule KairosDatabase do
     {:ok, 0}
   end
 
-  def insert(host, port, metric, timestamp, value) do
+  def insert(host, port, metric, timestamp, value, tags \\ %{}) do
     Logger.debug(fn -> "Inserting value #{value} into metric '#{metric}' at #{timestamp}" end)
 
     url = "#{host}:#{port}/api/v1/datapoints"
-    data = create_metric_map(metric, timestamp, value) |> Poison.encode!()
+    data = create_metric_map(metric, timestamp, value, tags) |> Poison.encode!()
     headers = [{"Content-Type", "application/json"}]
 
     {:ok, optime, response} = @kairos_database_request.timed_post(url, data, headers)

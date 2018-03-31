@@ -1,11 +1,18 @@
 defmodule RecordServerTest do
   use ExUnit.Case, async: true
 
-  defp start_supervised_record_server(metrics, tags \\ [%{}], start_time \\ 0, interval \\ 1000, record_count \\ 10) do
+  defp start_supervised_record_server(
+         metrics,
+         tags \\ [%{}],
+         start_time \\ 0,
+         interval \\ 1000,
+         record_count \\ 10
+       ) do
     rserver_spec = %{
       id: RecordServer,
       start: {RecordServer, :start_link, [metrics, tags]}
     }
+
     tsg_spec = %{
       id: TimestampGenerator,
       start:

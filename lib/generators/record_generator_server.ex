@@ -1,3 +1,7 @@
+defmodule Beiin.Record do
+  defstruct metric: "name", tags: %{"default" => "value"}, timestamp: 0, value: 0
+end
+
 defmodule RecordServer do
   use GenServer
 
@@ -55,8 +59,4 @@ defmodule RecordServer do
 
     {:reply, next, new_map}
   end
-end
-
-defmodule Beiin.Record do
-  defstruct metric: "name", tags: %{"default" => "value"}, timestamp: 0, value: 0
 end

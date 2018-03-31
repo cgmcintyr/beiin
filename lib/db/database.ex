@@ -9,7 +9,8 @@ defmodule Database do
               port :: integer,
               metric :: String.t(),
               timestamp :: integer,
-              value :: integer
+              value :: integer,
+              tags :: map()
             ) :: {:ok, integer} | {:error, String.t()}
 
   @callback read(

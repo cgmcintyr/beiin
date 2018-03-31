@@ -6,6 +6,7 @@ defmodule DatabaseClientTest do
   @metric "metric"
   @timestamp 1234
   @value 4321
+  @tags %{test: "test"}
 
   defmodule CustomDatabase do
     @behaviour Database
@@ -13,7 +14,7 @@ defmodule DatabaseClientTest do
       {:ok, 0}
     end
 
-    def insert(_, _, _, _, _) do
+    def insert(_, _, _, _, _, _) do
       {:ok, 1234}
     end
 
@@ -29,6 +30,6 @@ defmodule DatabaseClientTest do
 
   test "DatabaseClient.insert calls databases insert function" do
     {:ok, pid} = DatabaseClient.new(CustomDatabase, @host, @port)
-    assert DatabaseClient.insert(pid, @metric, @timestamp, @value) == {:ok, 1234}
+    assert DatabaseClient.insert(pid, @metric, @timestamp, @value, @tags) == {:ok, 1234}
   end
 end

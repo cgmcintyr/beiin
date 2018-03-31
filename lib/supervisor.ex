@@ -1,17 +1,7 @@
 defmodule RecordServerSupervisor do
   use Supervisor
 
-  def start_link(opts) do
-    Supervisor.start_link(__MODULE__, :ok, opts)
-  end
-
-  def init(:ok) do
-    metrics = ["metric_1", "metric_2"]
-    tags = [%{host: "default"}]
-    record_count = 10
-    interval = 1000
-    start_time = 0
-
+  def start_link(metrics, tags, record_count, interval, start_time, opts \\ []) do
     children = [
       %{
         id: RecordServer,
@@ -26,6 +16,10 @@ defmodule RecordServerSupervisor do
       }
     ]
 
+    Supervisor.start_link(__MODULE__, children, opts)
+  end
+
+  def init(children) do
     Supervisor.init(children, strategy: :one_for_one)
   end
 end
