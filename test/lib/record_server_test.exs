@@ -1,105 +1,99 @@
 defmodule RecordServerTest do
   use ExUnit.Case, async: true
 
-  test "RecordServer with 1 metric returns list with 1 record" do
-    metrics = ["test_metric_1"]
-
-    rserver_spec = %{id: RecordServer, start: {RecordServer, :start_link, [metrics]}}
-    rserver = start_supervised!(rserver_spec)
-
-    [record] = RecordServer.next(rserver)
-    assert record.metric == hd(metrics)
-  end
-
-  test "RecordServer with 1 metric 1 tag map returns record with tag map" do
-    metrics = ["test_metric_1"]
-    tags = [%{test: "test_tag"}]
-
-    rserver_spec = %{id: RecordServer, start: {RecordServer, :start_link, [metrics, tags]}}
-    rserver = start_supervised!(rserver_spec)
-
-    [record] = RecordServer.next(rserver)
-    assert record.tags == hd(tags)
-  end
-
-  test "RecordServer with N metrics returns record for each metric" do
-    metrics = ["test_metric_1", "test_metric_2"]
-
-    rserver_spec = %{id: RecordServer, start: {RecordServer, :start_link, [metrics]}}
-    rserver = start_supervised!(rserver_spec)
-
-    records = RecordServer.next(rserver)
-    assert length(records) == length(metrics)
-
-    record_metrics = Enum.map(records, fn r -> r.metric end)
-    assert Enum.all?(metrics, fn metric -> Enum.member?(record_metrics, metric) end)
-  end
-
-  test "RecordServer with N metrics returns N records with matching timestamps" do
-    metrics = ["test_metric_1", "test_metric_2"]
-    tags = [%{}]
-    start_time = 1234
-
-    rserver_spec = %{
-      id: RecordServer,
-      start: {RecordServer, :start_link, [metrics, tags, start_time]}
-    }
-
-    rserver = start_supervised!(rserver_spec)
-
-    [record | records] = RecordServer.next(rserver)
-    assert Enum.all?(records, fn record -> record.timestamp == start_time end)
-  end
-
-  test "RecordServer with N metrics and M tag maps returns N*M records" do
-    metrics = ["test_metric_1", "test_metric_2", "test_metric_3"]
-    tags = [%{host: "test_host_1"}, %{host: "test_host_2"}]
-
-    rserver_spec = %{id: RecordServer, start: {RecordServer, :start_link, [metrics, tags]}}
-    rserver = start_supervised!(rserver_spec)
-
-    records = RecordServer.next(rserver)
-    assert length(metrics) * length(tags) == length(records)
-
-    record_metrics = Enum.map(records, fn record -> record.metric end)
-    record_tags = Enum.map(records, fn record -> record.tags end)
-
-    assert Enum.all?(metrics, fn m -> Enum.member?(record_metrics, m) end)
-    assert Enum.all?(tags, fn t -> Enum.member?(record_tags, t) end)
-  end
-
-  test "RecordServer's first call to next matches initialised start time" do
-    metrics = ["test_metric_1"]
-    tags = [%{}]
-    start_time = 9999
-
-    rserver_spec = %{
-      id: RecordServer,
-      start: {RecordServer, :start_link, [metrics, tags, start_time]}
-    }
-
-    rserver = start_supervised!(rserver_spec)
-
-    [record] = RecordServer.next(rserver)
-    assert record.timestamp == start_time
-  end
-
-  test "Calls to RecordServer.next increments timestamp by interval" do
-    metrics = ["test_metric_1"]
-    tags = [%{}]
-    start_time = :os.system_time(:millisecond)
-    interval = 1000
-
+  defp start_supervised_record_server(metrics, tags \\ [%{}], start_time \\ 0, interval \\ 1000) do
     rserver_spec = %{
       id: RecordServer,
       start: {RecordServer, :start_link, [metrics, tags, start_time, interval]}
     }
 
-    rserver = start_supervised!(rserver_spec)
+    start_supervised!(rserver_spec)
+  end
 
-    [record1] = RecordServer.next(rserver)
-    [record2] = RecordServer.next(rserver)
+  describe "Calling RecordServer.next" do
+    test "with 1 metric returns record for that metric" do
+      metrics = ["test_metric_1"]
+      rserver = start_supervised_record_server(metrics)
 
-    assert record2.timestamp == record1.timestamp + interval
+      record = RecordServer.next(rserver)
+      assert record.metric == hd(metrics)
+    end
+
+    test "with 1 tag map returns record with that tag map" do
+     metrics = ["test_metric_2"]
+     tags = [%{test: "test_tag"}]
+     rserver = start_supervised_record_server(metrics, tags)
+
+     record = RecordServer.next(rserver)
+     assert record.tags == hd(tags)
+    end
+
+    test "with N metrics and 1 tag map N times returns record for each metric" do
+      metrics = ["test_metric_1", "test_metric_2"]
+      rserver = start_supervised_record_server(metrics)
+
+      records = [RecordServer.next(rserver), RecordServer.next(rserver)]
+
+      record_metrics = Enum.map(records, fn r -> r.metric end)
+      assert Enum.all?(metrics, fn metric -> Enum.member?(record_metrics, metric) end)
+    end
+
+    test "with N metrics and 1 tag map N*2 times returns 2 records for each metric" do
+      metrics = ["test_metric_1", "test_metric_2"]
+      rserver = start_supervised_record_server(metrics)
+
+      records =
+        Enum.map(metrics, fn _ -> [RecordServer.next(rserver), RecordServer.next(rserver)] end)
+        |> List.flatten()
+
+      record_metrics = Enum.map(records, fn r -> r.metric end)
+
+      assert Enum.all?(metrics, fn metric ->
+               Enum.count(record_metrics, fn record_metric -> metric == record_metric end)
+             end)
+    end
+
+    test "with N metrics and 1 tag map N times returns N records with start_time" do
+     metrics = ["test_metric_1", "test_metric_2"]
+     tags = [%{}]
+     start_time = 1234
+     rserver = start_supervised_record_server(metrics, tags, start_time)
+
+     records = [RecordServer.next(rserver), RecordServer.next(rserver)]
+     assert Enum.all?(records, fn record -> record.timestamp == start_time end)
+    end
+
+    test "with N metrics and 1 tag map N*2 times returns sets of timestamps incremented by interval" do
+     metrics = ["test_metric_1", "test_metric_2"]
+     tags = [%{}]
+     start_time = 1234
+     interval = 4444
+     rserver = start_supervised_record_server(metrics, tags, start_time, interval)
+
+     records1 = [RecordServer.next(rserver), RecordServer.next(rserver)]
+     records2 = [RecordServer.next(rserver), RecordServer.next(rserver)]
+
+     assert Enum.all?(records1, fn record -> record.timestamp == start_time end)
+     assert Enum.all?(records2, fn record -> record.timestamp == start_time + interval end)
+    end
+
+    test "with N metrics and M tag maps N*M times returns records for cartesian product of metrics and tags" do
+      metrics = ["test_metric_1", "test_metric_2", "test_metric_3"]
+      tags = [%{host: "test_host_1"}, %{host: "test_host_2"}]
+
+      rserver_spec = %{id: RecordServer, start: {RecordServer, :start_link, [metrics, tags]}}
+      rserver = start_supervised!(rserver_spec)
+
+      n = length(metrics)
+      m = length(tags)
+
+      records = Enum.map(0..(n*m), fn(_) -> RecordServer.next(rserver) end)
+
+      record_metrics = Enum.map(records, fn record -> record.metric end)
+      record_tags = Enum.map(records, fn record -> record.tags end)
+
+      assert Enum.all?(metrics, fn m -> Enum.member?(record_metrics, m) end)
+      assert Enum.all?(tags, fn t -> Enum.member?(record_tags, t) end)
+     end
   end
 end

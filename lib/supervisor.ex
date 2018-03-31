@@ -10,7 +10,10 @@ defmodule RecordServerSupervisor do
 
   def init(:ok) do
     children = [
-      %{id: RecordServer, start: {RecordServer, :start_link, [@metrics, @tags, 1000, 1000, [name: RecordServer]]}},
+      %{
+        id: RecordServer,
+        start: {RecordServer, :start_link, [@metrics, @tags, 1000, 1000, [name: RecordServer]]}
+      }
     ]
 
     Supervisor.init(children, strategy: :one_for_one)
