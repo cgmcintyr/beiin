@@ -35,7 +35,7 @@ defmodule TimestampGenerator do
   end
 
   def rand_timestamp(pid) do
-    Agent.get_and_update(pid, fn map ->
+    Agent.get(pid, fn map ->
       {:ok, interval} = Map.fetch(map, :interval)
       {:ok, record_count} = Map.fetch(map, :record_count)
       {:ok, start_time} = Map.fetch(map, :start_time)
@@ -45,7 +45,7 @@ defmodule TimestampGenerator do
         |> Integer.floor_div(interval)
         |> Kernel.*(interval)
 
-      {ts, map}
+      ts
     end)
   end
 end
