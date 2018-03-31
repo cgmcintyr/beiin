@@ -30,7 +30,7 @@ defmodule RecordServer do
     {start_time, m1} = Map.pop(map, :start_time)
     {interval, m2} = Map.pop(m1, :interval)
 
-    {:ok, pid} = TimestampGenerator.new(start_time, interval)
+    {:ok, pid} = TimestampGenerator.new(start_time, interval, 10)
     {:ok, Map.merge(m2, %{tsg_pid: pid})}
   end
 
