@@ -1,8 +1,16 @@
 defmodule TimestampGenerator do
-  def new(start_time, interval, record_count) do
-    Agent.start_link(fn ->
-      %{start_time: start_time, interval: interval, timestamp: start_time - interval, record_count: record_count}
-    end)
+  def new(start_time, interval, record_count, opts \\ []) do
+    Agent.start_link(
+      fn ->
+        %{
+          start_time: start_time,
+          interval: interval,
+          timestamp: start_time - interval,
+          record_count: record_count
+        }
+      end,
+      opts
+    )
   end
 
   def get_timestamp(pid) do
@@ -32,7 +40,11 @@ defmodule TimestampGenerator do
       {:ok, record_count} = Map.fetch(map, :record_count)
       {:ok, start_time} = Map.fetch(map, :start_time)
 
-      ts = start_time + :rand.uniform(interval * record_count) |> Integer.floor_div(interval) |> Kernel.*(interval)
+      ts =
+        (start_time + :rand.uniform(interval * record_count))
+        |> Integer.floor_div(interval)
+        |> Kernel.*(interval)
+
       {ts, map}
     end)
   end
