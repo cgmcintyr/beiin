@@ -13,7 +13,13 @@ defmodule Client do
   def load(_, opts \\ []) do
     Logger.info(fn -> "Loading data" end)
 
-    LoadRecordServerSupervisor.start_link(@metrics, @tags, @record_count, @interval, @insert_start)
+    LoadRecordServerSupervisor.start_link(
+      @metrics,
+      @tags,
+      @record_count,
+      @interval,
+      @insert_start
+    )
 
     {db, _} = Keyword.pop(opts, :database, @default_database)
     db.init("localhost", 8080)

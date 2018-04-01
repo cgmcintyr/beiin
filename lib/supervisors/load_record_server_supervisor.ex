@@ -5,11 +5,14 @@ defmodule LoadRecordServerSupervisor do
     children = [
       %{
         id: TimestampGenerator,
-        start: {TimestampGenerator, :new, [start_time, interval, record_count, [name: TimestampGenerator]]}
+        start:
+          {TimestampGenerator, :new,
+           [start_time, interval, record_count, [name: TimestampGenerator]]}
       },
       %{
         id: RecordServer,
-        start: {RecordServer, :start_link, [metrics, tags, TimestampGenerator, [name: RecordServer]]}
+        start:
+          {RecordServer, :start_link, [metrics, tags, TimestampGenerator, [name: RecordServer]]}
       }
     ]
 
