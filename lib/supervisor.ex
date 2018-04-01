@@ -1,18 +1,15 @@
-defmodule RecordServerSupervisor do
+defmodule LoadRecordServerSupervisor do
   use Supervisor
 
   def start_link(metrics, tags, record_count, interval, start_time, opts \\ []) do
     children = [
       %{
-        id: RecordServer,
-        start:
-          {RecordServer, :start_link, [metrics, tags, [name: RecordServer]]}
+        id: TimestampGenerator,
+        start: {TimestampGenerator, :new, [start_time, interval, record_count, [name: TimestampGenerator]]}
       },
       %{
-        id: TimestampGenerator,
-        start:
-          {TimestampGenerator, :new,
-           [start_time, interval, record_count, [name: TimestampGenerator]]}
+        id: RecordServer,
+        start: {RecordServer, :start_link, [metrics, tags, TimestampGenerator, [name: RecordServer]]}
       }
     ]
 
