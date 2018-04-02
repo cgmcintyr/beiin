@@ -17,14 +17,13 @@ OPERATION_REGEX = re.compile('(?P<operation>[A-Z]+)\s+(?P<latency>[\d]*)')
 
 def plot_data_as_histogram(ax, operation, data):
     logger.info('Plotting {}'.format(operation))
-    ax.hist(data, 100, facecolor='green', alpha=0.75, log=True)
+    ax.hist(data, 100, facecolor='green', alpha=0.75, range=(0, 100000))
     ax.set_title(operation)
     ax.set(xlabel='Time (ms)', ylabel='Frequency')
 
 def plot_latencies(latencies):
     logger.info('Plotting data')
     S = len(latencies)
-    S = 1
 
     fig, axes = plt.subplots(S, ncols=1, sharex=True, sharey=True)
     #fig.text(0.5, 0.04, 'common xlabel', ha='center', va='center')
