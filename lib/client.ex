@@ -4,7 +4,7 @@ defmodule Client do
   @default_database KairosDatabase
   @host "localhost"
   @port 8080
-  @metrics ["new_metric"]
+  @metrics ["new_metric", "two_metric"]
   @tags [%{host: "test_host"}]
   @record_count 1_000
   @insert_start 1_522_331_174_000
@@ -30,9 +30,21 @@ defmodule Client do
     worker_insert_count = Integer.floor_div(insert_count, worker_count)
 
     1..worker_count
-    |> Enum.map(fn(_) -> Task.async(Worker, :run, [:insert, db_pid, worker_insert_count]) end)
-    |> Enum.map(fn(task) -> Task.await(task, 1_000_000) end)
+    |> Enum.map(fn _ -> Task.async(Worker, :run, [:insert, db_pid, worker_insert_count]) end)
+    |> Enum.map(fn task -> Task.await(task, 1_000_000) end)
+    |> log_results
 
+  end
+
+  defp log_results(results) do
+    File.open("done.txt", [:write], fn file ->
+      Enum.map(results, fn {operation, latencies} ->
+        case operation do
+          :insert -> Enum.map(latencies, fn(l) -> IO.binwrite(file, "INSERT #{l}\n") end)
+          :read -> Enum.map(latencies, fn(l) -> IO.binwrite(file, "READ #{l}\n") end)
+        end
+      end)
+    end)
   end
 
   def run(_) do
