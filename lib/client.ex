@@ -7,6 +7,7 @@ defmodule Client do
   @metrics ["new_metric", "two_metric"]
   @tags [%{host: "test_host"}]
   @record_count 1_000
+  @operation_count 100
   @insert_start 1_522_331_174_000
   @interval 1000
 
@@ -32,12 +33,36 @@ defmodule Client do
     1..worker_count
     |> Enum.map(fn _ -> Task.async(Worker, :run, [:insert, db_pid, worker_insert_count]) end)
     |> Enum.map(fn task -> Task.await(task, 1_000_000) end)
-    |> log_results
-
+    |> log_results("load.txt")
   end
 
-  defp log_results(results) do
-    File.open("done.txt", [:write], fn file ->
+  def run(_, opts \\ []) do
+    Logger.info(fn -> "Running test" end)
+
+    RecordServerSupervisor.start_link_run(
+      @metrics,
+      @tags,
+      @record_count,
+      @interval,
+      @insert_start
+    )
+
+    {db, _} = Keyword.pop(opts, :database, @default_database)
+    db.init("localhost", 8080)
+    {:ok, db_pid} = DatabaseClient.new(db, @host, @port)
+
+    insert_worker_count = 5
+    read_worker_count = 5
+
+    [List.duplicate(:insert, insert_worker_count) | List.duplicate(:read, read_worker_count)] 
+    |> List.flatten
+    |> Enum.map(fn type -> Task.async(Worker, :run, [type, db_pid, @operation_count]) end)
+    |> Enum.map(fn task -> Task.await(task, 1_000_000) end)
+    |> log_results("run2.txt")
+  end
+
+  defp log_results(results, fname) do
+    File.open(fname, [:write], fn file ->
       Enum.map(results, fn {operation, latencies} ->
         case operation do
           :insert -> Enum.map(latencies, fn(l) -> IO.binwrite(file, "INSERT #{l}\n") end)
@@ -45,9 +70,5 @@ defmodule Client do
         end
       end)
     end)
-  end
-
-  def run(_) do
-    Logger.error(fn -> "Run has not been implemented yet" end)
   end
 end

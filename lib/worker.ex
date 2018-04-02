@@ -11,7 +11,7 @@ defmodule Worker do
 
     case type do
       :insert -> inserts(db_client, operations, [])
-      :read -> reads(db_client, operations)
+      :read -> reads(db_client, operations, [])
     end
   end
 
@@ -29,7 +29,13 @@ defmodule Worker do
     inserts(db_client, n - 1, [latency | ls])
   end
 
-  defp reads(_, _) do
-    Logger.error(fn -> "Worker.reads not implemented" end)
+  defp reads(_, 0, ls) do
+    {:read, ls}
+  end
+
+  defp reads(db_client, n, ls) do
+    record = RecordServer.next_read(RecordServer)
+    {:ok, latency} = DatabaseClient.read(db_client, record.metric, record.timestamp)
+    reads(db_client, n - 1, [latency | ls])
   end
 end
