@@ -17,7 +17,7 @@ defmodule RecordServerTest do
       id: TimestampGenerator,
       start:
         {TimestampGenerator, :new,
-         [start_time, interval, record_count, name: TimestampGenerator]]}
+         [start_time, interval, record_count, [name: TimestampGenerator]]}
     }
 
     start_supervised!(tsg_spec)
@@ -57,7 +57,9 @@ defmodule RecordServerTest do
       rserver = start_supervised_record_server(metrics)
 
       records =
-        Enum.map(metrics, fn _ -> [RecordServer.next_insert(rserver), RecordServer.next_insert(rserver)] end)
+        Enum.map(metrics, fn _ ->
+          [RecordServer.next_insert(rserver), RecordServer.next_insert(rserver)]
+        end)
         |> List.flatten()
 
       record_metrics = Enum.map(records, fn r -> r.metric end)
@@ -142,7 +144,9 @@ defmodule RecordServerTest do
       rserver = start_supervised_record_server(metrics)
 
       records =
-        Enum.map(metrics, fn _ -> [RecordServer.next_read(rserver), RecordServer.next_read(rserver)] end)
+        Enum.map(metrics, fn _ ->
+          [RecordServer.next_read(rserver), RecordServer.next_read(rserver)]
+        end)
         |> List.flatten()
 
       record_metrics = Enum.map(records, fn r -> r.metric end)

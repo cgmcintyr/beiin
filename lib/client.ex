@@ -13,7 +13,7 @@ defmodule Client do
   def load(_, opts \\ []) do
     Logger.info(fn -> "Loading data" end)
 
-    LoadRecordServerSupervisor.start_link(
+    RecordServerSupervisor.start_link_load(
       @metrics,
       @tags,
       @record_count,
@@ -42,7 +42,7 @@ defmodule Client do
     end
 
     value = :rand.uniform(1_000_000_000)
-    record = RecordServer.next(RecordServer)
+    record = RecordServer.next_insert(RecordServer)
     DatabaseClient.insert(db_pid, record.metric, record.timestamp, value, record.tags)
     load_loop(db_pid, n - 1)
   end

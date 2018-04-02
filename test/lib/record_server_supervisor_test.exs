@@ -1,4 +1,4 @@
-defmodule LoadRecordServerSupervisorTest do
+defmodule RecordServerSupervisorTest do
   use ExUnit.Case
 
   @metrics ["test"]
@@ -7,8 +7,8 @@ defmodule LoadRecordServerSupervisorTest do
   @start_time 0
   @interval 1000
 
-  test "LoadRecordServerSupervisor restarts RecordServer on crash" do
-    LoadRecordServerSupervisor.start_link(@metrics, @tags, @record_count, @interval, @start_time)
+  test "RecordServerSupervisor restarts RecordServer on crash" do
+    RecordServerSupervisor.start_link(@metrics, @tags, @record_count, @interval, @start_time)
 
     pid = Process.whereis(RecordServer)
     ref = Process.monitor(pid)
@@ -24,8 +24,8 @@ defmodule LoadRecordServerSupervisorTest do
     end
   end
 
-  test "LoadRecordServerSupervisor restarts TimestampGenerator on crash" do
-    LoadRecordServerSupervisor.start_link(@metrics, @tags, @record_count, @interval, @start_time)
+  test "RecordServerSupervisor restarts TimestampGenerator on crash" do
+    RecordServerSupervisor.start_link(@metrics, @tags, @record_count, @interval, @start_time)
 
     pid = Process.whereis(TimestampGenerator)
     ref = Process.monitor(pid)
