@@ -24,3 +24,6 @@ beiin-*.tar
 
 # Ignore script
 beiin
+
+# Ignore output folder
+/output/

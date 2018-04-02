@@ -6,8 +6,8 @@ defmodule Client do
   @port 8080
   @metrics ["new_metric", "two_metric"]
   @tags [%{host: "test_host"}]
-  @record_count 1_000
-  @operation_count 100
+  @record_count 1_000_000
+  @operation_count 10_000
   @insert_start 1_522_331_174_000
   @interval 1000
 
@@ -33,7 +33,7 @@ defmodule Client do
     1..worker_count
     |> Enum.map(fn _ -> Task.async(Worker, :run, [:insert, db_pid, worker_insert_count]) end)
     |> Enum.map(fn task -> Task.await(task, 1_000_000) end)
-    |> log_results("load.txt")
+    |> log_results("output/beiin_load_#{@record_count}__#{length(@metrics)}_metrics_#{length(@tags)}_tags.txt")
   end
 
   def run(_, opts \\ []) do
@@ -58,7 +58,7 @@ defmodule Client do
     |> List.flatten
     |> Enum.map(fn type -> Task.async(Worker, :run, [type, db_pid, @operation_count]) end)
     |> Enum.map(fn task -> Task.await(task, 1_000_000) end)
-    |> log_results("run2.txt")
+    |> log_results("output/beiin_load_#{@operation_count}__#{length(@metrics)}_metrics_#{length(@tags)}_tags.txt")
   end
 
   defp log_results(results, fname) do
