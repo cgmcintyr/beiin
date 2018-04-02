@@ -10,7 +10,7 @@ defmodule RecordServerTest do
        ) do
     rserver_spec = %{
       id: RecordServer,
-      start: {RecordServer, :start_link, [metrics, tags]}
+      start: {RecordServer, :start_link, [metrics, tags, [ins_tsg: TimestampGenerator]]}
     }
 
     tsg_spec = %{

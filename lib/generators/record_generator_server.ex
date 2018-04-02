@@ -7,12 +7,14 @@ defmodule RecordServer do
 
   ## Client API
 
-  def start_link(metrics, tag_maps, tsg_ref \\ TimestampGenerator, opts \\ []) do
+  def start_link(metrics, tag_maps, opts \\ []) do
+    {ins_tsg, opts} = Keyword.pop(opts, :ins_tsg, TimestampGenerator)
+
     init_map = %{
       metrics: metrics,
       next_ins_records: [],
       tag_maps: tag_maps,
-      tsg_ref: tsg_ref
+      tsg_ref: ins_tsg
     }
 
     GenServer.start_link(__MODULE__, init_map, opts)

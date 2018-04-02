@@ -12,7 +12,7 @@ defmodule LoadRecordServerSupervisor do
       %{
         id: RecordServer,
         start:
-          {RecordServer, :start_link, [metrics, tags, TimestampGenerator, [name: RecordServer]]}
+          {RecordServer, :start_link, [metrics, tags, [read_tsg: TimestampGenerator, name: RecordServer]]}
       }
     ]
 
