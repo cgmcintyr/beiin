@@ -10,7 +10,7 @@ defmodule RecordServer do
   def start_link(metrics, tag_maps, tsg_ref \\ TimestampGenerator, opts \\ []) do
     init_map = %{
       metrics: metrics,
-      next_records: [],
+      next_ins_records: [],
       tag_maps: tag_maps,
       tsg_ref: tsg_ref
     }
@@ -18,8 +18,8 @@ defmodule RecordServer do
     GenServer.start_link(__MODULE__, init_map, opts)
   end
 
-  def next(server) do
-    GenServer.call(server, {:next})
+  def next_insert(server) do
+    GenServer.call(server, {:next_insert})
   end
 
   ## Server Callbacks
@@ -27,7 +27,7 @@ defmodule RecordServer do
     {:ok, map}
   end
 
-  defp generate_next_records(metrics, tag_maps, tsg_ref) do
+  defp generate_next_ins_records(metrics, tag_maps, tsg_ref) do
     timestamp = TimestampGenerator.next_timestamp(tsg_ref)
 
     Enum.map(metrics, fn metric -> %Beiin.Record{metric: metric, timestamp: timestamp} end)
@@ -35,16 +35,16 @@ defmodule RecordServer do
     |> List.flatten()
   end
 
-  def handle_call({:next}, _from, map) do
+  def handle_call({:next_insert}, _from, map) do
     {:ok, metrics} = Map.fetch(map, :metrics)
     {:ok, tag_maps} = Map.fetch(map, :tag_maps)
     {:ok, tsg_ref} = Map.fetch(map, :tsg_ref)
 
     {next, new_map} =
-      Map.get_and_update(map, :next_records, fn records ->
+      Map.get_and_update(map, :next_ins_records, fn records ->
         [next | rs] =
           case records do
-            [] -> generate_next_records(metrics, tag_maps, tsg_ref)
+            [] -> generate_next_ins_records(metrics, tag_maps, tsg_ref)
             _ -> records
           end
 

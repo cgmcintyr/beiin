@@ -24,12 +24,12 @@ defmodule RecordServerTest do
     start_supervised!(rserver_spec)
   end
 
-  describe "Calling RecordServer.next" do
+  describe "Calling RecordServer.next_insert" do
     test "with 1 metric returns record for that metric" do
       metrics = ["test_metric_1"]
       rserver = start_supervised_record_server(metrics)
 
-      record = RecordServer.next(rserver)
+      record = RecordServer.next_insert(rserver)
       assert record.metric == hd(metrics)
     end
 
@@ -38,7 +38,7 @@ defmodule RecordServerTest do
       tags = [%{test: "test_tag"}]
       rserver = start_supervised_record_server(metrics, tags)
 
-      record = RecordServer.next(rserver)
+      record = RecordServer.next_insert(rserver)
       assert record.tags == hd(tags)
     end
 
@@ -46,7 +46,7 @@ defmodule RecordServerTest do
       metrics = ["test_metric_1", "test_metric_2"]
       rserver = start_supervised_record_server(metrics)
 
-      records = [RecordServer.next(rserver), RecordServer.next(rserver)]
+      records = [RecordServer.next_insert(rserver), RecordServer.next_insert(rserver)]
 
       record_metrics = Enum.map(records, fn r -> r.metric end)
       assert Enum.all?(metrics, fn metric -> Enum.member?(record_metrics, metric) end)
@@ -57,7 +57,7 @@ defmodule RecordServerTest do
       rserver = start_supervised_record_server(metrics)
 
       records =
-        Enum.map(metrics, fn _ -> [RecordServer.next(rserver), RecordServer.next(rserver)] end)
+        Enum.map(metrics, fn _ -> [RecordServer.next_insert(rserver), RecordServer.next_insert(rserver)] end)
         |> List.flatten()
 
       record_metrics = Enum.map(records, fn r -> r.metric end)
@@ -73,7 +73,7 @@ defmodule RecordServerTest do
       start_time = 1234
       rserver = start_supervised_record_server(metrics, tags, start_time)
 
-      records = [RecordServer.next(rserver), RecordServer.next(rserver)]
+      records = [RecordServer.next_insert(rserver), RecordServer.next_insert(rserver)]
       assert Enum.all?(records, fn record -> record.timestamp == start_time end)
     end
 
@@ -84,8 +84,8 @@ defmodule RecordServerTest do
       interval = 4444
       rserver = start_supervised_record_server(metrics, tags, start_time, interval)
 
-      records1 = [RecordServer.next(rserver), RecordServer.next(rserver)]
-      records2 = [RecordServer.next(rserver), RecordServer.next(rserver)]
+      records1 = [RecordServer.next_insert(rserver), RecordServer.next_insert(rserver)]
+      records2 = [RecordServer.next_insert(rserver), RecordServer.next_insert(rserver)]
 
       assert Enum.all?(records1, fn record -> record.timestamp == start_time end)
       assert Enum.all?(records2, fn record -> record.timestamp == start_time + interval end)
@@ -99,7 +99,7 @@ defmodule RecordServerTest do
       n = length(metrics)
       m = length(tags)
 
-      records = Enum.map(0..(n * m), fn _ -> RecordServer.next(rserver) end)
+      records = Enum.map(0..(n * m), fn _ -> RecordServer.next_insert(rserver) end)
 
       record_metrics = Enum.map(records, fn record -> record.metric end)
       record_tags = Enum.map(records, fn record -> record.tags end)
