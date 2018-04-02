@@ -8,16 +8,12 @@ defmodule DatabaseClient do
   end
 
   def read(pid, metric, timestamp) do
-    Agent.get(pid, fn map ->
-      {:ok, f} = Map.fetch(map, :read_fun)
-      f.(metric).(timestamp)
-    end)
+    {:ok, f} = Agent.get(pid, fn map -> Map.fetch(map, :read_fun) end)
+    f.(metric).(timestamp)
   end
 
   def insert(pid, metric, timestamp, value, tags) do
-    Agent.get(pid, fn map ->
-      {:ok, f} = Map.fetch(map, :insert_fun)
-      f.(metric).(timestamp).(value).(tags)
-    end)
+    {:ok, f} = Agent.get(pid, fn map -> Map.fetch(map, :insert_fun) end)
+    f.(metric).(timestamp).(value).(tags)
   end
 end
