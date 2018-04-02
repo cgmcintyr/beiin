@@ -4,7 +4,7 @@ defmodule Client do
   @default_database KairosDatabase
   @host "localhost"
   @port 8080
-  @metrics ["localhost"]
+  @metrics ["new_metric"]
   @tags [%{host: "test_host"}]
   @record_count 1_000
   @insert_start 1_522_331_174_000
@@ -23,27 +23,19 @@ defmodule Client do
 
     {db, _} = Keyword.pop(opts, :database, @default_database)
     db.init("localhost", 8080)
-
     {:ok, db_pid} = DatabaseClient.new(db, @host, @port)
 
-    load_loop(db_pid, @record_count)
+    worker_count = 10
+    insert_count = length(@metrics) * length(@tags) * @record_count
+    worker_insert_count = Integer.floor_div(insert_count, worker_count)
+
+    1..worker_count
+    |> Enum.map(fn(_) -> Task.async(Worker, :run, [:insert, db_pid, worker_insert_count]) end)
+    |> Enum.map(fn(task) -> Task.await(task, 1_000_000) end)
+
   end
 
   def run(_) do
     Logger.error(fn -> "Run has not been implemented yet" end)
-  end
-
-  defp load_loop(_, 0) do
-  end
-
-  defp load_loop(db_pid, n) do
-    if rem(n, 100) === 0 do
-      Logger.info(fn -> "Operations performed: #{@record_count - n}" end)
-    end
-
-    value = :rand.uniform(1_000_000_000)
-    record = RecordServer.next_insert(RecordServer)
-    DatabaseClient.insert(db_pid, record.metric, record.timestamp, value, record.tags)
-    load_loop(db_pid, n - 1)
   end
 end
