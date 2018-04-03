@@ -6,7 +6,7 @@ defmodule Beiin.MixProject do
       app: :beiin,
       version: "0.1.0",
       elixir: "~> 1.6",
-      escript: [main_module: Commandline.CLI],
+      escript: [main_module: Beiin.CLI],
       start_permanent: Mix.env() == :prod,
       deps: deps()
     ]

@@ -1,4 +1,4 @@
-defmodule Commandline.CLI do
+defmodule Beiin.CLI do
   require Logger
 
   alias Beiin.Client
