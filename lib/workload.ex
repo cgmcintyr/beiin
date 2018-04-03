@@ -2,6 +2,7 @@ defmodule Workload do
   defstruct name: 'Default workload',
             description: 'Default workload',
             record_count: 1_000,
+            operation_count: 1_000,
             record_start: 0,
             interval: 1000,
             metrics: ["test_metric"],

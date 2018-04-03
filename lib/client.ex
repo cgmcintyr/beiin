@@ -1,4 +1,4 @@
-defmodule Client do
+defmodule Beiin.Client do
   require Logger
 
   @default_database KairosDatabase

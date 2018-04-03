@@ -1,6 +1,8 @@
 defmodule Commandline.CLI do
   require Logger
 
+  alias Beiin.Client
+
   def main(args) do
     optimus =
       Optimus.new!(
