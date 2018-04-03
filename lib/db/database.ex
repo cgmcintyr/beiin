@@ -2,7 +2,7 @@ defmodule Beiin.DB.Database do
   @callback init(
               host :: String.t(),
               port :: integer
-            ) :: {:ok, integer} | {:error, String.t()}
+            ) :: {:ok} | {:error, String.t()}
 
   @callback insert(
               host :: String.t(),

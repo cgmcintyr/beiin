@@ -8,7 +8,12 @@ defmodule Beiin.DB.Kairos.Database do
 
   def init(host, port) do
     Logger.info(fn -> "Setting up kairos database at #{host}:#{port}" end)
-    {:ok, 0}
+    response = HTTPoison.get!("http://#{host}:#{port}/api/v1/health/check")
+
+    case response.status_code do
+      204 -> {:ok}
+      _ -> {:error, "Kairos failed health check"}
+    end
   end
 
   def insert(host, port, metric, timestamp, value, tags \\ %{}) do

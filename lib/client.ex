@@ -20,7 +20,7 @@ defmodule Beiin.Client do
     )
 
     {db, _} = Keyword.pop(opts, :database, @default_database)
-    db.init("localhost", 8080)
+    {:ok} = db.init("localhost", 8080)
     {:ok, db_pid} = DatabaseClient.new(db, @host, @port)
 
     insert_count =
@@ -52,7 +52,7 @@ defmodule Beiin.Client do
     )
 
     {db, _} = Keyword.pop(opts, :database, @default_database)
-    db.init("localhost", 8080)
+    {:ok} = db.init("localhost", 8080)
     {:ok, db_pid} = DatabaseClient.new(db, @host, @port)
 
     start = System.monotonic_time(:microsecond)
