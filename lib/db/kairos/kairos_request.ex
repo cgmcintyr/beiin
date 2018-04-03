@@ -1,4 +1,4 @@
-defmodule KairosDatabase.Request do
+defmodule Beiin.DB.Kairos.Request do
   @callback timed_post(
               url :: String.t(),
               data :: String.t(),
@@ -6,8 +6,8 @@ defmodule KairosDatabase.Request do
             ) :: {:ok, optime :: integer, response :: map()}
 end
 
-defmodule KairosDatabase.Request.HTTP do
-  @behaviour KairosDatabase.Request
+defmodule Beiin.DB.Kairos.Request.HTTP do
+  @behaviour Beiin.DB.Kairos.Request
 
   def timed_post(url, data, headers) do
     {optime, {:ok, response}} = :timer.tc(&HTTPoison.post/3, [url, data, headers])

@@ -1,4 +1,4 @@
-defmodule TimestampGenerator do
+defmodule Beiin.TimestampGenerator do
   def new(start_time, interval, record_count, opts \\ []) do
     Agent.start_link(
       fn ->

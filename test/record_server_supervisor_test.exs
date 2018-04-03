@@ -1,4 +1,4 @@
-defmodule RecordServerSupervisorTest do
+defmodule Beiin.RecordServerSupervisor.Test do
   use ExUnit.Case
 
   alias Beiin.RecordServer

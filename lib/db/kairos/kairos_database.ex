@@ -1,5 +1,7 @@
-defmodule KairosDatabase do
-  @behaviour Database
+defmodule Beiin.DB.Kairos.Database do
+  alias Beiin.DB.Kairos.Metric
+
+  @behaviour Beiin.DB.Database
   @kairos_database_request Application.get_env(:beiin, :kairos_database_request)
 
   require Logger
@@ -48,6 +50,6 @@ defmodule KairosDatabase do
   end
 
   defp create_metric_map(metric, timestamp, value, tags \\ %{default: "default"}) do
-    %KairosMetric{name: metric, datapoints: [[timestamp, value]], tags: tags}
+    %Metric{name: metric, datapoints: [[timestamp, value]], tags: tags}
   end
 end

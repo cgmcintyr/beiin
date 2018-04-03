@@ -1,25 +1,26 @@
-defmodule KairosQueryResultValue do
+defmodule Beiin.DB.Kairos.QueryResultValue do
   @derive [Poison.Encoder]
   defstruct timestamp: 0, value: 0
 end
 
-defmodule KairosQueryResult do
+defmodule Beiin.DB.Kairos.QueryResult do
   @derive [Poison.Encoder]
   defstruct name: "metric", group_by: [], tags: %{}, values: []
 end
 
-defmodule KairosQuery do
+defmodule Beiin.DB.Kairos.Query do
+  alias Beiin.DB.Kairos.QueryResult
   @derive [Poison.Encoder]
-  defstruct sample_size: 0, results: [%KairosQueryResult{}]
+  defstruct sample_size: 0, results: [%QueryResult{}]
 end
 
-defimpl Poison.Encoder, for: KairosQueryResultValue do
+defimpl Poison.Encoder, for: Beiin.DB.Kairos.QueryResultValue do
   def encode(%{timestamp: timestamp, value: value}, options) do
     Poison.Encoder.encode([timestamp, value], options)
   end
 end
 
-defimpl Poison.Encoder, for: KairosQueryResult do
+defimpl Poison.Encoder, for: Beiin.DB.Kairos.QueryResult do
   def encode(%{name: name, group_by: group_by, tags: tags, values: values}, options) do
     Poison.Encoder.encode(
       %{
@@ -33,9 +34,11 @@ defimpl Poison.Encoder, for: KairosQueryResult do
   end
 end
 
-defimpl Poison.Decoder, for: KairosQueryResult do
+defimpl Poison.Decoder, for: Beiin.DB.Kairos.QueryResult do
+  alias Beiin.DB.Kairos.QueryResultValue
+
   defp to_result_value([timestamp, value]) do
-    %KairosQueryResultValue{timestamp: timestamp, value: value}
+    %QueryResultValue{timestamp: timestamp, value: value}
   end
 
   def decode(query_result, options) do
@@ -43,7 +46,7 @@ defimpl Poison.Decoder, for: KairosQueryResult do
   end
 end
 
-defimpl Poison.Encoder, for: KairosQuery do
+defimpl Poison.Encoder, for: Beiin.DB.Kairos.Query do
   def encode(%{sample_size: sample_size, results: []}, options) do
     Poison.Encoder.encode(
       %{

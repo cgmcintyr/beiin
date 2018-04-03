@@ -1,3 +1,3 @@
 use Mix.Config
 
-config :beiin, :kairos_database_request, KairosDatabase.MockRequest
+config :beiin, :kairos_database_request, Beiin.DB.Kairos.Request.Mock

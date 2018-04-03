@@ -1,4 +1,4 @@
-defmodule Database do
+defmodule Beiin.DB.Database do
   @callback init(
               host :: String.t(),
               port :: integer

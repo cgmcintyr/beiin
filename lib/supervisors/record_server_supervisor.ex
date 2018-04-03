@@ -1,14 +1,13 @@
 defmodule RecordServerSupervisor do
   use Supervisor
   alias Beiin.RecordServer
+  alias Beiin.TimestampGenerator, as: TSG
 
   def start_link_load(metrics, tags, record_count, interval, start_time, opts \\ []) do
     children = [
       %{
-        id: TimestampGenerator,
-        start:
-          {TimestampGenerator, :new,
-           [start_time, interval, record_count, [name: TimestampGenerator]]}
+        id: TSG,
+        start: {TSG, :new, [start_time, interval, record_count, [name: TSG]]}
       },
       %{
         id: RecordServer,
@@ -25,12 +24,11 @@ defmodule RecordServerSupervisor do
     children = [
       %{
         id: :read_tsg,
-        start: {TimestampGenerator, :new, [start_time, interval, record_count, [name: :read_tsg]]}
+        start: {TSG, :new, [start_time, interval, record_count, [name: :read_tsg]]}
       },
       %{
         id: :ins_tsg,
-        start:
-          {TimestampGenerator, :new, [insert_start, interval, record_count, [name: :ins_tsg]]}
+        start: {TSG, :new, [insert_start, interval, record_count, [name: :ins_tsg]]}
       },
       %{
         id: RecordServer,

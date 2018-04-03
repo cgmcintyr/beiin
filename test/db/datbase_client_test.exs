@@ -1,6 +1,8 @@
 defmodule DatabaseClientTest do
   use ExUnit.Case, async: true
 
+  alias Beiin.DB.DatabaseClient
+
   @host "localhost"
   @port 9999
   @metric "metric"
@@ -9,7 +11,7 @@ defmodule DatabaseClientTest do
   @tags %{test: "test"}
 
   defmodule CustomDatabase do
-    @behaviour Database
+    @behaviour Beiin.DB.Database
     def init(_, _) do
       {:ok, 0}
     end

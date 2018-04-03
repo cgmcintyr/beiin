@@ -1,4 +1,4 @@
-defmodule BeiinTest do
+defmodule Beiin.Test do
   use ExUnit.Case
   doctest Beiin
 

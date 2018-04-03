@@ -1,14 +1,15 @@
 defmodule Beiin.Client do
   require Logger
 
-  @default_database KairosDatabase
+  alias Beiin.DB.DatabaseClient
+  alias Beiin.Worker
+
+  @default_database Beiin.DB.Kairos.Database
   @host "localhost"
   @port 8080
 
   def load(config, opts \\ []) do
     Logger.info(fn -> "Loading data" end)
-    IO.inspect(config)
-    System.halt(0)
 
     RecordServerSupervisor.start_link_load(
       config.metrics,

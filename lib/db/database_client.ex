@@ -1,4 +1,4 @@
-defmodule DatabaseClient do
+defmodule Beiin.DB.DatabaseClient do
   use Agent
 
   def new(database, host, port) do

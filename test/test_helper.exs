@@ -1,3 +1,3 @@
 Application.ensure_all_started(:mox)
-Mox.defmock(KairosDatabase.MockRequest, for: KairosDatabase.Request)
+Mox.defmock(Beiin.DB.Kairos.Request.Mock, for: Beiin.DB.Kairos.Request)
 ExUnit.start()

@@ -5,11 +5,14 @@ end
 defmodule Beiin.RecordServer do
   use GenServer
 
+  alias Beiin.Record
+  alias Beiin.TimestampGenerator, as: TSG
+
   ## Client API
 
   def start_link(metrics, tag_maps, opts \\ []) do
-    {ins_tsg, opts} = Keyword.pop(opts, :ins_tsg, TimestampGenerator)
-    {read_tsg, opts} = Keyword.pop(opts, :read_tsg, TimestampGenerator)
+    {ins_tsg, opts} = Keyword.pop(opts, :ins_tsg, TSG)
+    {read_tsg, opts} = Keyword.pop(opts, :read_tsg, TSG)
 
     init_map = %{
       metrics: metrics,
@@ -37,9 +40,9 @@ defmodule Beiin.RecordServer do
   end
 
   defp generate_next_records(metrics, tag_maps, tsg_ref) do
-    timestamp = TimestampGenerator.next_timestamp(tsg_ref)
+    timestamp = TSG.next_timestamp(tsg_ref)
 
-    Enum.map(metrics, fn metric -> %Beiin.Record{metric: metric, timestamp: timestamp} end)
+    Enum.map(metrics, fn metric -> %Record{metric: metric, timestamp: timestamp} end)
     |> Enum.map(fn record -> Enum.map(tag_maps, fn t -> %{record | tags: t} end) end)
     |> List.flatten()
   end

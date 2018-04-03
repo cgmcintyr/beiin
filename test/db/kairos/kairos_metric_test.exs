@@ -1,5 +1,7 @@
-defmodule KairosMetricTest do
+defmodule Beiin.DB.Kairos.Metric.Test do
   use ExUnit.Case
+
+  alias Beiin.DB.Kairos.Metric, as: KairosMetric
 
   describe "Poison.encode! KairosMetric" do
     test "Encoding entire KairosMetric returns json object" do

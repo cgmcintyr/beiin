@@ -1,5 +1,9 @@
-defmodule KairosQueryTest do
+defmodule Beiin.DB.Kairos.Query.Test do
   use ExUnit.Case
+
+  alias Beiin.DB.Kairos.Query, as: KairosQuery
+  alias Beiin.DB.Kairos.QueryResult, as: KairosQueryResult
+  alias Beiin.DB.Kairos.QueryResultValue, as: KairosQueryResultValue
 
   describe "Poison.encode! KairosQuery" do
     test "Encoding entire KairosQuery returns json object" do
@@ -51,10 +55,6 @@ defmodule KairosQueryTest do
       Enum.map(expected_results, fn r -> assert Enum.member?(decoded.results, r) end)
     end
   end
-end
-
-defmodule KairosQueryResultTest do
-  use ExUnit.Case
 
   describe "Poison.encode! KairosQueryResult" do
     test "Encoding entire KairosQueryResult returns json object" do

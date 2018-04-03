@@ -1,8 +1,9 @@
-defmodule Worker do
+defmodule Beiin.Worker do
   require Logger
   use Task
 
   alias Beiin.RecordServer
+  alias Beiin.DB.DatabaseClient
 
   def start_link(type, operations, db_client) do
     Task.start_link(__MODULE__, :run, [type, operations, db_client])

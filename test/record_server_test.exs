@@ -1,7 +1,8 @@
-defmodule RecordServerTest do
+defmodule Beiin.RecordServer.Test do
   use ExUnit.Case, async: true
 
   alias Beiin.RecordServer
+  alias Beiin.TimestampGenerator, as: TSG
 
   defp start_supervised_record_server(
          metrics,
@@ -16,10 +17,8 @@ defmodule RecordServerTest do
     }
 
     tsg_spec = %{
-      id: TimestampGenerator,
-      start:
-        {TimestampGenerator, :new,
-         [start_time, interval, record_count, [name: TimestampGenerator]]}
+      id: TSG,
+      start: {TSG, :new, [start_time, interval, record_count, [name: TSG]]}
     }
 
     start_supervised!(tsg_spec)
