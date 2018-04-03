@@ -1,7 +1,33 @@
+# Meta
 name: workloada
-description: Test read workload
-recordcount: 100
-recordstart: 1521903303
-interval: 60s
-insert_proportion: 0.0
-read_proportion: 1.0
+description: 'Test read workload'
+
+# Number of records to insert in load phase for each metrics, tags permutation
+record_count: 100
+# Time to start inserting records at
+record_start: 1521903303000
+# Number of microseconds between each insert
+interval: 1000
+# Number of processes inserting data in load phase
+load_worker_count: 20
+
+# Metrics to insert/read
+metrics:
+  - test_metric_1
+  - test_metric_2
+
+# Possible tag combinations each metric can have
+tags:
+  -
+    host: test_host_1
+    region: EU
+  -
+    host: test_host_2
+    region: EU
+
+# Number of operations for each read/insert worker to perform in run phase
+operation_count: 1000
+# Number of processes in run phase performing operation_count * reads
+read_worker_count: 10
+# Number of processes in run phase performing operation_count * inserts
+insert_worker_count: 10
