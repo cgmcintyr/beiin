@@ -1,6 +1,8 @@
 defmodule RecordServerTest do
   use ExUnit.Case, async: true
 
+  alias Beiin.RecordServer
+
   defp start_supervised_record_server(
          metrics,
          tags \\ [%{}],

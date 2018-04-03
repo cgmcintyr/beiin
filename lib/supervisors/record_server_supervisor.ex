@@ -1,5 +1,6 @@
 defmodule RecordServerSupervisor do
   use Supervisor
+  alias Beiin.RecordServer
 
   def start_link_load(metrics, tags, record_count, interval, start_time, opts \\ []) do
     children = [

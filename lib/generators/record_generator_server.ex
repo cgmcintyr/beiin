@@ -2,7 +2,7 @@ defmodule Beiin.Record do
   defstruct metric: "name", tags: %{"default" => "value"}, timestamp: 0, value: 0
 end
 
-defmodule RecordServer do
+defmodule Beiin.RecordServer do
   use GenServer
 
   ## Client API

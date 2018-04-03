@@ -1,6 +1,8 @@
 defmodule RecordServerSupervisorTest do
   use ExUnit.Case
 
+  alias Beiin.RecordServer
+
   @metrics ["test"]
   @tags [%{}]
   @record_count 10
