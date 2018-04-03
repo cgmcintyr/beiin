@@ -84,6 +84,9 @@ def analyze(filename, outfile, verbose):
     with open(filename, 'r') as f:
         for line in f.readlines():
            match = OPERATION_REGEX.match(line.strip())
+           if not match:
+               continue
+
            operation = match.group('operation')
            time_sent = int(match.group('time_sent'))
            latency = int(match.group('latency'))

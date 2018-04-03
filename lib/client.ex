@@ -6,8 +6,8 @@ defmodule Client do
   @port 8080
   @metrics ["new_metric", "two_metric"]
   @tags [%{host: "test_host"}]
-  @record_count 100_000
-  @operation_count 100_000
+  @record_count 10_000
+  @operation_count 10_000
   @insert_start 1_522_331_174_000
   @interval 1000
 
@@ -29,11 +29,12 @@ defmodule Client do
     worker_count = 10
     insert_count = length(@metrics) * length(@tags) * @record_count
     worker_insert_count = Integer.floor_div(insert_count, worker_count)
+    start = System.monotonic_time(:microsecond)
 
     1..worker_count
     |> Enum.map(fn _ -> Task.async(Worker, :run, [:insert, db_pid, worker_insert_count]) end)
     |> Enum.map(fn task -> Task.await(task, 1_000_000) end)
-    |> log_results(
+    |> log_results(start,
       "output/beiin_load_#{@record_count}__#{length(@metrics)}_metrics_#{length(@tags)}_tags.txt"
     )
   end
@@ -53,30 +54,30 @@ defmodule Client do
     db.init("localhost", 8080)
     {:ok, db_pid} = DatabaseClient.new(db, @host, @port)
 
-    insert_worker_count = 5
-    read_worker_count = 5
+    insert_worker_count = 50
+    read_worker_count = 50
+    start = System.monotonic_time()
 
     [List.duplicate(:insert, insert_worker_count) | List.duplicate(:read, read_worker_count)]
     |> List.flatten()
     |> Enum.map(fn type -> Task.async(Worker, :run, [type, db_pid, @operation_count]) end)
     |> Enum.map(fn task -> Task.await(task, 1_000_000) end)
-    |> log_results(
-      "output/beiin_run_#{@operation_count}__#{length(@metrics)}_metrics_#{length(@tags)}_tags.txt"
-    )
+    |> log_results(start, "output/beiin_run_#{@operation_count}__#{length(@metrics)}_metrics_#{length(@tags)}_tags.txt")
   end
 
-  defp log_results(results, fname) do
+  defp log_results(results, start, fname) do
     File.open(fname, [:write], fn file ->
+      IO.binwrite(file, "start=#{start}\n")
       Enum.map(results, fn {operation, latencies} ->
         case operation do
           :insert ->
             Enum.map(latencies, fn l ->
-              IO.binwrite(file, "INSERT #{elem(l, 0)} #{elem(l, 1)}\n")
+              IO.binwrite(file, "INSERT #{elem(l, 0) - start} #{elem(l, 1)}\n")
             end)
 
           :read ->
             Enum.map(latencies, fn l ->
-              IO.binwrite(file, "READ #{elem(l, 0)} #{elem(l, 1)}\n")
+              IO.binwrite(file, "READ #{elem(l, 0) - start} #{elem(l, 1)}\n")
             end)
         end
       end)

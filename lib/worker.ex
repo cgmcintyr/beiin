@@ -23,7 +23,7 @@ defmodule Worker do
     value = :rand.uniform(1_000_000_000)
     record = RecordServer.next_insert(RecordServer)
 
-    sent_at = System.monotonic_time()
+    sent_at = System.monotonic_time(:microsecond)
 
     {:ok, latency} =
       DatabaseClient.insert(db_client, record.metric, record.timestamp, value, record.tags)
@@ -38,7 +38,7 @@ defmodule Worker do
   defp reads(db_client, n, ls) do
     record = RecordServer.next_read(RecordServer)
 
-    sent_at = System.monotonic_time()
+    sent_at = System.monotonic_time(:microsecond)
     {:ok, latency} = DatabaseClient.read(db_client, record.metric, record.timestamp)
 
     reads(db_client, n - 1, [{sent_at, latency} | ls])
