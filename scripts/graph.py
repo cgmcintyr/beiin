@@ -25,7 +25,7 @@ def plot_data_as_histogram(ax, operation, data):
 
 def plot_data_as_scatter(ax, operation, x, y):
     logger.info('Plotting line {}'.format(operation))
-    ax.scatter(x, y, s=10)
+    ax.scatter(x, y, s=2)
     ax.set_title(operation)
     ax.set(xlabel='Time (ms)', ylabel='Frequency')
 

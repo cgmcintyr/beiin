@@ -56,7 +56,7 @@ defmodule Client do
 
     insert_worker_count = 50
     read_worker_count = 50
-    start = System.monotonic_time()
+    start = System.monotonic_time(:microsecond)
 
     [List.duplicate(:insert, insert_worker_count) | List.duplicate(:read, read_worker_count)]
     |> List.flatten()
@@ -67,7 +67,6 @@ defmodule Client do
 
   defp log_results(results, start, fname) do
     File.open(fname, [:write], fn file ->
-      IO.binwrite(file, "start=#{start}\n")
       Enum.map(results, fn {operation, latencies} ->
         case operation do
           :insert ->
