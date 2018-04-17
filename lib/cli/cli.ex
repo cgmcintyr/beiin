@@ -13,6 +13,24 @@ defmodule Beiin.CLI do
         about: "Utility for benchmarking different time series databases with custom workloads.",
         allow_unknown_args: false,
         parse_double_dash: true,
+        options: [
+          port: [
+            value_name: "PORT",
+            short: "-p",
+            long: "--port",
+            help: "Port of database being benchmarked",
+            parser: :integer,
+            default: "localhost"
+          ],
+          host: [
+            value_name: "HOST",
+            short: "-h",
+            long: "--host",
+            help: "Host of database being benchmarked",
+            parser: :integer,
+            default: 8080
+          ]
+        ],
         subcommands: [
           run: [
             name: "run",

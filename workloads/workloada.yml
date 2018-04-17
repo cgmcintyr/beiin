@@ -3,7 +3,7 @@ name: workloada
 description: 'Test read workload'
 
 # Number of records to insert in load phase for each metrics, tags permutation
-record_count: 100
+record_count: 10000
 # Time to start inserting records at
 record_start: 1521903303000
 # Number of microseconds between each insert

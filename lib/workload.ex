@@ -9,5 +9,7 @@ defmodule Workload do
             tags: [%{host: "test_host"}],
             load_worker_count: 10,
             read_worker_count: 10,
-            insert_worker_count: 10
+            insert_worker_count: 10,
+            host: "localhost",
+            port: 8080
 end

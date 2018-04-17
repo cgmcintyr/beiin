@@ -5,8 +5,6 @@ defmodule Beiin.Client do
   alias Beiin.Worker
 
   @default_database Beiin.DB.Kairos.Database
-  @host "localhost"
-  @port 8080
 
   def load(config, opts \\ []) do
     Logger.info(fn -> "Loading data" end)
@@ -20,8 +18,8 @@ defmodule Beiin.Client do
     )
 
     {db, _} = Keyword.pop(opts, :database, @default_database)
-    {:ok} = db.init("localhost", 8080)
-    {:ok, db_pid} = DatabaseClient.new(db, @host, @port)
+    {:ok} = db.init(config.host, config.port)
+    {:ok, db_pid} = DatabaseClient.new(db, config.host, config.port)
 
     insert_count =
       (length(config.metrics) * length(config.tags) * config.record_count)
@@ -52,8 +50,8 @@ defmodule Beiin.Client do
     )
 
     {db, _} = Keyword.pop(opts, :database, @default_database)
-    {:ok} = db.init("localhost", 8080)
-    {:ok, db_pid} = DatabaseClient.new(db, @host, @port)
+    {:ok} = db.init(config.host, config.port)
+    {:ok, db_pid} = DatabaseClient.new(db, config.host, config.port)
 
     start = System.monotonic_time(:microsecond)
     insert_workers = List.duplicate(:insert, config.insert_worker_count)
