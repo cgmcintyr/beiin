@@ -5,8 +5,8 @@ defmodule Beiin.Worker do
   alias Beiin.RecordServer
   alias Beiin.DB.DatabaseClient
 
-  def start_link(type, operations, db_client) do
-    Task.start_link(__MODULE__, :run, [type, operations, db_client])
+  def start_link(type, db_client, operations) do
+    Task.start_link(__MODULE__, :run, [type, db_client, operations])
   end
 
   def run(type, db_client, operations) do

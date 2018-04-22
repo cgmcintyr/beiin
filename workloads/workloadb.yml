@@ -28,6 +28,6 @@ tags:
 # Number of operations for each read/insert worker to perform in run phase
 operation_count: 1000
 # Number of processes in run phase performing operation_count * reads
-read_worker_count: 190
+read_worker_count: 10
 # Number of processes in run phase performing operation_count * inserts
-insert_worker_count: 10
+insert_worker_count: 190

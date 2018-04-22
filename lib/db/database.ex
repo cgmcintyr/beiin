@@ -17,6 +17,7 @@ defmodule Beiin.DB.Database do
               host :: String.t(),
               port :: integer,
               metric :: String.t(),
-              timestamp :: integer
+              timestamp :: integer,
+              tags :: map()
             ) :: {:ok, integer} | {:error, String.t()}
 end
