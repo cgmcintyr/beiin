@@ -2,19 +2,22 @@
 
 > TSDB Benchmarking Tool
 
-## Installation
+## Requirements
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `beiin` to your list of dependencies in `mix.exs`:
+* Elixir 1.6
+* Erlang/OTP 20
 
-```elixir
-def deps do
-  [
-    {:beiin, "~> 0.1.0"}
-  ]
-end
+## Building
+
+Beiin is designed to run as an
+[escript](https://hexdocs.pm/mix/master/Mix.Tasks.Escript.Build.html)
+
+```
+mix escript.build
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/beiin](https://hexdocs.pm/beiin).
+## Running
+
+```
+./beiin --help
+```
