@@ -9,7 +9,7 @@ record_start: 1521903303000
 # Number of microseconds between each insert
 interval: 1000
 # Number of processes inserting data in load phase
-load_worker_count: 100
+load_worker_count: 200
 
 # Metrics to insert/read
 metrics:

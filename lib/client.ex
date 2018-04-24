@@ -29,12 +29,10 @@ defmodule Beiin.Client do
 
     1..config.load_worker_count
     |> Enum.map(fn _ -> Task.async(Worker, :run, [:insert, db_pid, insert_count]) end)
-    |> Enum.map(fn task -> Task.await(task, 1_000_000_000_000_000) end)
+    |> Enum.map(fn task -> Task.await(task, 7_200_000) end)
     |> log_results(
       start,
-      "output/beiin_load_#{config.record_count}__#{length(config.metrics)}_metrics_#{
-        length(config.tags)
-      }_tags.txt"
+      "out.txt"
     )
   end
 
@@ -60,7 +58,7 @@ defmodule Beiin.Client do
     [insert_workers | read_workers]
     |> List.flatten()
     |> Enum.map(fn type -> Task.async(Worker, :run, [type, db_pid, config.operation_count]) end)
-    |> Enum.map(fn task -> Task.await(task, 1_000_000_000_000_000) end)
+    |> Enum.map(fn task -> Task.await(task, 7_200_000) end)
     |> log_results(
       start,
       "out.txt"
