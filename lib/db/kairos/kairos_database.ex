@@ -23,13 +23,8 @@ defmodule Beiin.DB.Kairos.Database do
     data = create_metric_map(metric, timestamp, value, tags) |> Poison.encode!()
     headers = [{"Content-Type", "application/json"}]
 
-    {:ok, optime, response} = @kairos_database_request.timed_post(url, data, headers)
-
-    Logger.debug(fn ->
-      "Insert ran in #{optime / 1_000_000} with status code #{response.status_code}"
-    end)
-
-    {:ok, optime}
+    {status, optime, _} = @kairos_database_request.timed_post(url, data, headers)
+    {status, optime}
   end
 
   def read(host, port, metric, timestamp, tags \\ %{default: "default"}) do
@@ -45,16 +40,11 @@ defmodule Beiin.DB.Kairos.Database do
 
     headers = [{"Content-Type", "application/json"}]
 
-    {:ok, optime, response} = @kairos_database_request.timed_post(url, data, headers)
-
-    Logger.debug(fn ->
-      "Read ran in #{optime / 1_000_000} with status code #{response.status_code}"
-    end)
-
-    {:ok, optime}
+    {status, optime, _} = @kairos_database_request.timed_post(url, data, headers)
+    {status, optime}
   end
 
-  defp create_metric_map(metric, timestamp, value, tags \\ %{default: "default"}) do
+  defp create_metric_map(metric, timestamp, value, tags) do
     %Metric{name: metric, datapoints: [[timestamp, value]], tags: tags}
   end
 end

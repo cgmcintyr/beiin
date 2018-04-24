@@ -27,11 +27,12 @@ defmodule Beiin.Worker do
     record = RecordServer.next_insert(RecordServer)
 
     sent_at = System.monotonic_time(:microsecond)
+    res = DatabaseClient.insert(db_client, record.metric, record.timestamp, value, record.tags)
 
-    {:ok, latency} =
-      DatabaseClient.insert(db_client, record.metric, record.timestamp, value, record.tags)
-
-    inserts(db_client, n - 1, [{sent_at, latency} | ls])
+    case res do
+      {:ok, latency} -> inserts(db_client, n - 1, [{sent_at, latency} | ls])
+      {:error, _} -> inserts(db_client, n - 1, ls)
+    end
   end
 
   defp reads(_, 0, ls) do
@@ -40,10 +41,13 @@ defmodule Beiin.Worker do
 
   defp reads(db_client, n, ls) do
     record = RecordServer.next_read(RecordServer)
-
     sent_at = System.monotonic_time(:microsecond)
-    {:ok, latency} = DatabaseClient.read(db_client, record.metric, record.timestamp)
 
-    reads(db_client, n - 1, [{sent_at, latency} | ls])
+    res = DatabaseClient.read(db_client, record.metric, record.timestamp, record.tags)
+
+    case res do
+      {:ok, latency} -> reads(db_client, n - 1, [{sent_at, latency} | ls])
+      {:error, _} -> reads(db_client, n - 1, ls)
+    end
   end
 end
